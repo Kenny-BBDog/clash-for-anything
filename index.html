@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash 配置生成器 - 傻瓜式一键转换</title>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --error: #ff4444;
+            --border: #2a2a4a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--accent), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        textarea, input[type="text"], select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Consolas', monospace;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .node-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .node-tag {
+            background: linear-gradient(135deg, var(--accent), #0099cc);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .node-tag .remove {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .node-tag .remove:hover {
+            opacity: 1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #0099cc);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00cc6a);
+            color: #000;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .output-area {
+            background: var(--bg-primary);
+            border-radius: 10px;
+            padding: 16px;
+            max-height: 400px;
+            overflow: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+        
+        .residential-config {
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 100, 0, 0.1));
+            border: 1px solid var(--warning);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+        
+        .residential-config h4 {
+            color: var(--warning);
+            margin-bottom: 16px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .tip {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 12px 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .status {
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            display: none;
+        }
+        
+        .status.success {
+            display: block;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .status.error {
+            display: block;
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Clash 配置生成器</h1>
+            <p class="subtitle">粘贴 VLESS 链接，一键生成完整配置文件</p>
+        </header>
+        
+        <!-- Step 1: 输入节点 -->
+        <div class="card">
+            <h3 class="card-title">第一步：添加代理节点</h3>
+            <div class="input-group">
+                <label>粘贴 VLESS / VMess / SS 链接（支持多行批量添加）</label>
+                <textarea id="linkInput" placeholder="vless://uuid@server:port?...#节点名称
+vmess://base64...
+支持多行批量粘贴..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="addNodes()">➕ 添加节点</button>
+            
+            <div class="node-list" id="nodeList"></div>
+            <div class="status" id="addStatus"></div>
+        </div>
+        
+        <!-- Step 2: 住宅 IP 配置（可选） -->
+        <div class="card">
+            <h3 class="card-title">第二步：住宅 IP 配置（可选，防 AI 封号）</h3>
+            <div class="tip">
+                💡 如果你有住宅代理（如 IPRoyal），配置后 Claude/ChatGPT 等 AI 服务会自动走住宅 IP，大幅降低封号风险。<br>
+                没有的话可以跳过，AI 服务会走普通代理。
+            </div>
+            
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="enableResidential" onchange="toggleResidential()">
+                    <span>启用住宅 IP 代理</span>
+                </label>
+            </div>
+            
+            <div class="residential-config" id="residentialConfig" style="display: none;">
+                <h4>🏠 住宅代理配置</h4>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>服务器地址</label>
+                        <input type="text" id="resServer" placeholder="例: 161.77.227.227">
+                    </div>
+                    <div class="input-group">
+                        <label>端口</label>
+                        <input type="text" id="resPort" placeholder="例: 12324">
+                    </div>
+                    <div class="input-group">
+                        <label>用户名</label>
+                        <input type="text" id="resUsername" placeholder="例: 14af10dcbb5dd">
+                    </div>
+                    <div class="input-group">
+                        <label>密码</label>
+                        <input type="text" id="resPassword" placeholder="例: a8b1e5e806">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>上游代理节点（住宅 IP 通过哪个节点连接）</label>
+                    <select id="resDialer">
+                        <option value="">-- 请先添加节点 --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: 生成配置 -->
+        <div class="card">
+            <h3 class="card-title">第三步：生成配置文件</h3>
+            
+            <div class="checkbox-group" style="margin-bottom: 20px;">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="platformWindows" checked>
+                    <span>Windows 版本</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="platformAndroid" checked>
+                    <span>Android 版本</span>
+                </label>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="generateConfig()">⚡ 生成配置</button>
+            </div>
+        </div>
+        
+        <!-- Output -->
+        <div class="card" id="outputCard" style="display: none;">
+            <h3 class="card-title">生成结果</h3>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('windows')">Windows</div>
+                <div class="tab" onclick="switchTab('android')">Android</div>
+            </div>
+            
+            <div class="output-area" id="output"></div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="copyConfig()">📋 复制配置</button>
+                <button class="btn btn-secondary" onclick="downloadConfig()">💾 下载文件</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Made with ❤️ | <a href="https://github.com/Kenny-BBDog/clash-for-anything" target="_blank">GitHub</a></p>
+            <p style="margin-top: 8px;">所有操作均在浏览器本地完成，不会上传任何数据</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 存储节点
+        let nodes = [];
+        let currentPlatform = 'windows';
+        let generatedConfigs = { windows: '', android: '' };
+        
+        // 解析 VLESS 链接
+        function parseVless(link) {
+            link = link.replace('vless://', '');
+            
+            let name = 'VLESS';
+            if (link.includes('#')) {
+                const parts = link.split('#');
+                name = decodeURIComponent(parts.pop());
+                link = parts.join('#');
+            }
+            
+            let params = {};
+            if (link.includes('?')) {
+                const [main, paramStr] = link.split('?');
+                link = main;
+                paramStr.split('&').forEach(p => {
+                    const [k, v] = p.split('=');
+                    params[k] = decodeURIComponent(v || '');
+                });
+            }
+            
+            const match = link.match(/([^@]+)@([^:]+):(\d+)/);
+            if (!match) throw new Error('无效的 VLESS 链接格式');
+            
+            const [, uuid, server, port] = match;
+            
+            const node = {
+                name: name,
+                type: 'vless',
+                server: server,
+                port: parseInt(port),
+                uuid: uuid,
+                network: params.type || 'tcp'
+            };
+            
+            if (params.security === 'reality') {
+                node.tls = true;
+                node.servername = params.sni || '';
+                node['client-fingerprint'] = params.fp || 'chrome';
+                node['reality-opts'] = {
+                    'public-key': params.pbk || '',
+                    'short-id': params.sid || ''
+                };
+            } else if (params.security === 'tls') {
+                node.tls = true;
+                node.servername = params.sni || '';
+                if (params.fp) node['client-fingerprint'] = params.fp;
+            }
+            
+            if (params.flow) node.flow = params.flow;
+            
+            return node;
+        }
+        
+        // 解析 VMess 链接
+        function parseVmess(link) {
+            link = link.replace('vmess://', '');
+            const decoded = JSON.parse(atob(link));
+            
+            return {
+                name: decoded.ps || 'VMess',
+                type: 'vmess',
+                server: decoded.add,
+                port: parseInt(decoded.port),
+                uuid: decoded.id,
+                alterId: parseInt(decoded.aid || 0),
+                cipher: decoded.scy || 'auto',
+                network: decoded.net || 'tcp',
+                tls: decoded.tls === 'tls'
+            };
+        }
+        
+        // 添加节点
+        function addNodes() {
+            const input = document.getElementById('linkInput').value.trim();
+            if (!input) return;
+            
+            const lines = input.split('\n').filter(l => l.trim());
+            let added = 0, failed = 0;
+            
+            lines.forEach(line => {
+                line = line.trim();
+                try {
+                    let node;
+                    if (line.startsWith('vless://')) {
+                        node = parseVless(line);
+                    } else if (line.startsWith('vmess://')) {
+                        node = parseVmess(line);
+                    } else {
+                        throw new Error('不支持的链接类型');
+                    }
+                    
+                    // 检查重复
+                    if (!nodes.find(n => n.name === node.name)) {
+                        nodes.push(node);
+                        added++;
+                    }
+                } catch (e) {
+                    console.error(e);
+                    failed++;
+                }
+            });
+            
+            updateNodeList();
+            updateDialerSelect();
+            document.getElementById('linkInput').value = '';
+            
+            const status = document.getElementById('addStatus');
+            if (added > 0) {
+                status.className = 'status success';
+                status.textContent = `✅ 成功添加 ${added} 个节点` + (failed > 0 ? `，${failed} 个失败` : '');
+            } else {
+                status.className = 'status error';
+                status.textContent = '❌ 添加失败，请检查链接格式';
+            }
+        }
+        
+        // 更新节点列表显示
+        function updateNodeList() {
+            const list = document.getElementById('nodeList');
+            list.innerHTML = nodes.map((n, i) => `
+                <div class="node-tag">
+                    ${n.name} (${n.type})
+                    <span class="remove" onclick="removeNode(${i})">✕</span>
+                </div>
+            `).join('');
+        }
+        
+        // 删除节点
+        function removeNode(index) {
+            nodes.splice(index, 1);
+            updateNodeList();
+            updateDialerSelect();
+        }
+        
+        // 更新上游代理选择
+        function updateDialerSelect() {
+            const select = document.getElementById('resDialer');
+            select.innerHTML = '<option value="">-- 选择上游代理节点 --</option>' +
+                nodes.map(n => `<option value="${n.name}">${n.name}</option>`).join('');
+        }
+        
+        // 切换住宅 IP 配置显示
+        function toggleResidential() {
+            const enabled = document.getElementById('enableResidential').checked;
+            document.getElementById('residentialConfig').style.display = enabled ? 'block' : 'none';
+        }
+        
+        // 生成配置
+        function generateConfig() {
+            if (nodes.length === 0) {
+                alert('请先添加至少一个节点！');
+                return;
+            }
+            
+            const enableRes = document.getElementById('enableResidential').checked;
+            const genWindows = document.getElementById('platformWindows').checked;
+            const genAndroid = document.getElementById('platformAndroid').checked;
+            
+            // 住宅 IP 节点
+            let residentialNode = null;
+            if (enableRes) {
+                const server = document.getElementById('resServer').value.trim();
+                const port = document.getElementById('resPort').value.trim();
+                const username = document.getElementById('resUsername').value.trim();
+                const password = document.getElementById('resPassword').value.trim();
+                const dialer = document.getElementById('resDialer').value;
+                
+                if (server && port) {
+                    residentialNode = {
+                        name: '住宅IP',
+                        type: 'socks5',
+                        server: server,
+                        port: parseInt(port)
+                    };
+                    if (username) residentialNode.username = username;
+                    if (password) residentialNode.password = password;
+                    if (dialer) residentialNode['dialer-proxy'] = dialer;
+                }
+            }
+            
+            if (genWindows) {
+                generatedConfigs.windows = generatePlatformConfig('windows', residentialNode);
+            }
+            if (genAndroid) {
+                generatedConfigs.android = generatePlatformConfig('android', residentialNode);
+            }
+            
+            document.getElementById('outputCard').style.display = 'block';
+            switchTab(genWindows ? 'windows' : 'android');
+        }
+        
+        // 生成平台配置
+        function generatePlatformConfig(platform, residentialNode) {
+            const allNodes = residentialNode ? [residentialNode, ...nodes] : [...nodes];
+            const nodeNames = allNodes.map(n => n.name);
+            
+            let config = {
+                port: 7890,
+                'socks-port': 7891,
+                'mixed-port': 7892,
+                'allow-lan': true,
+                'bind-address': '*',
+                mode: 'rule',
+                'log-level': 'warning',
+                ipv6: false,
+                'external-controller': '127.0.0.1:9090',
+                'unified-delay': true,
+                'tcp-concurrent': true
+            };
+            
+            if (platform === 'windows') {
+                config['geodata-mode'] = true;
+                config['geodata-loader'] = 'memconservative';
+                config['geo-auto-update'] = true;
+                config['geo-update-interval'] = 24;
+                config['global-client-fingerprint'] = 'chrome';
+            } else {
+                config['geodata-mode'] = false;
+            }
+            
+            // DNS
+            config.dns = {
+                enable: true,
+                listen: '0.0.0.0:1053',
+                ipv6: false,
+                'enhanced-mode': 'fake-ip',
+                'fake-ip-range': '198.18.0.1/16',
+                'fake-ip-filter': ['*.lan', '*.local', 'time.*.com', 'ntp.*.com'],
+                'default-nameserver': ['119.29.29.29', '223.5.5.5'],
+                nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query'],
+                fallback: ['https://dns.google/dns-query', 'https://cloudflare-dns.com/dns-query'],
+                'fallback-filter': {
+                    geoip: platform === 'windows',
+                    ipcidr: ['240.0.0.0/4', '0.0.0.0/32']
+                }
+            };
+            
+            // Proxies
+            config.proxies = allNodes;
+            
+            // Proxy Groups
+            config['proxy-groups'] = [{
+                name: '🚀 代理选择',
+                type: 'select',
+                proxies: [...nodeNames, 'DIRECT']
+            }];
+            
+            // Rules
+            config.rules = generateRules(residentialNode !== null);
+            
+            return configToYaml(config);
+        }
+        
+        // 生成规则
+        function generateRules(hasResidential) {
+            const aiProxy = hasResidential ? '住宅IP' : '🚀 代理选择';
+            
+            return [
+                // 私有网络
+                'IP-CIDR,127.0.0.0/8,DIRECT,no-resolve',
+                'IP-CIDR,192.168.0.0/16,DIRECT,no-resolve',
+                'IP-CIDR,10.0.0.0/8,DIRECT,no-resolve',
+                'IP-CIDR,172.16.0.0/12,DIRECT,no-resolve',
+                
+                // 国内应用直连
+                'DOMAIN-SUFFIX,qq.com,DIRECT',
+                'DOMAIN-SUFFIX,weixin.qq.com,DIRECT',
+                'DOMAIN-SUFFIX,wechat.com,DIRECT',
+                'DOMAIN-SUFFIX,qpic.cn,DIRECT',
+                'DOMAIN-SUFFIX,gtimg.com,DIRECT',
+                'DOMAIN-SUFFIX,myqcloud.com,DIRECT',
+                'DOMAIN-SUFFIX,taobao.com,DIRECT',
+                'DOMAIN-SUFFIX,tmall.com,DIRECT',
+                'DOMAIN-SUFFIX,alicdn.com,DIRECT',
+                'DOMAIN-SUFFIX,alipay.com,DIRECT',
+                'DOMAIN-SUFFIX,jd.com,DIRECT',
+                'DOMAIN-SUFFIX,bilibili.com,DIRECT',
+                'DOMAIN-SUFFIX,douyin.com,DIRECT',
+                'DOMAIN-SUFFIX,bytedance.com,DIRECT',
+                'DOMAIN-SUFFIX,xiaohongshu.com,DIRECT',
+                'DOMAIN-SUFFIX,baidu.com,DIRECT',
+                'DOMAIN-SUFFIX,weibo.com,DIRECT',
+                'DOMAIN-SUFFIX,zhihu.com,DIRECT',
+                'DOMAIN-KEYWORD,weixin,DIRECT',
+                'DOMAIN-KEYWORD,wechat,DIRECT',
+                'DOMAIN-KEYWORD,tencent,DIRECT',
+                
+                // 特殊 .cn 域名（需要代理）
+                'DOMAIN-SUFFIX,googleapis.cn,🚀 代理选择',
+                'DOMAIN-SUFFIX,google.cn,🚀 代理选择',
+                
+                // .cn 直连
+                'DOMAIN-SUFFIX,cn,DIRECT',
+                
+                // AI 应用
+                `DOMAIN-SUFFIX,anthropic.com,${aiProxy}`,
+                `DOMAIN-SUFFIX,claude.ai,${aiProxy}`,
+                `DOMAIN-SUFFIX,openai.com,${aiProxy}`,
+                `DOMAIN-SUFFIX,chatgpt.com,${aiProxy}`,
+                `DOMAIN-SUFFIX,cursor.sh,${aiProxy}`,
+                `DOMAIN-KEYWORD,anthropic,${aiProxy}`,
+                `DOMAIN-KEYWORD,openai,${aiProxy}`,
+                `DOMAIN-KEYWORD,claude,${aiProxy}`,
+                
+                // Google
+                'DOMAIN-SUFFIX,google.com,🚀 代理选择',
+                'DOMAIN-SUFFIX,googleapis.com,🚀 代理选择',
+                'DOMAIN-SUFFIX,youtube.com,🚀 代理选择',
+                'DOMAIN-SUFFIX,github.com,🚀 代理选择',
+                
+                // 兜底
+                'MATCH,🚀 代理选择'
+            ];
+        }
+        
+        // 简单的 YAML 生成（不依赖外部库）
+        function configToYaml(obj, indent = 0) {
+            let yaml = '';
+            const pad = '  '.repeat(indent);
+            
+            for (const [key, value] of Object.entries(obj)) {
+                if (value === null || value === undefined) continue;
+                
+                if (Array.isArray(value)) {
+                    yaml += `${pad}${key}:\n`;
+                    value.forEach(item => {
+                        if (typeof item === 'object') {
+                            yaml += `${pad}  - `;
+                            const objYaml = configToYaml(item, 0).trim().split('\n');
+                            yaml += objYaml[0] + '\n';
+                            objYaml.slice(1).forEach(line => {
+                                yaml += `${pad}    ${line}\n`;
+                            });
+                        } else {
+                            yaml += `${pad}  - ${item}\n`;
+                        }
+                    });
+                } else if (typeof value === 'object') {
+                    yaml += `${pad}${key}:\n`;
+                    yaml += configToYaml(value, indent + 1);
+                } else if (typeof value === 'boolean') {
+                    yaml += `${pad}${key}: ${value}\n`;
+                } else if (typeof value === 'number') {
+                    yaml += `${pad}${key}: ${value}\n`;
+                } else {
+                    // 字符串
+                    if (value.includes(':') || value.includes('#') || value.includes("'")) {
+                        yaml += `${pad}${key}: "${value}"\n`;
+                    } else {
+                        yaml += `${pad}${key}: ${value}\n`;
+                    }
+                }
+            }
+            
+            return yaml;
+        }
+        
+        // 切换标签
+        function switchTab(platform) {
+            currentPlatform = platform;
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', (i === 0 && platform === 'windows') || (i === 1 && platform === 'android'));
+            });
+            document.getElementById('output').textContent = generatedConfigs[platform] || '请先生成配置';
+        }
+        
+        // 复制配置
+        function copyConfig() {
+            const text = generatedConfigs[currentPlatform];
+            navigator.clipboard.writeText(text).then(() => {
+                alert('已复制到剪贴板！');
+            });
+        }
+        
+        // 下载配置
+        function downloadConfig() {
+            const text = generatedConfigs[currentPlatform];
+            const filename = currentPlatform === 'windows' ? 'clash_windows.yaml' : 'clash_android.yaml';
+            
+            const blob = new Blob([text], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
