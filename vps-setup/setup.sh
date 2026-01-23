@@ -174,64 +174,23 @@ install_tools() {
     print_success "基础工具安装完成"
 }
 
+# 安装 3x-ui 面板
+install_3xui() {
+    print_info "安装 3x-ui 面板..."
+    
+    # 检查是否已安装
+    if systemctl is-active --quiet x-ui 2>/dev/null; then
+        print_success "3x-ui 已安装并运行中"
+        return
+    fi
+    
+    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/master/install.sh)
+    
+    print_success "3x-ui 安装完成"
+}
+
 # 安装 NextTrace (路由测试)
-install_nexttrace() {
-    print_info "安装 NextTrace (路由测试工具)..."
-    
-    if command -v nexttrace &> /dev/null; then
-        print_success "NextTrace 已安装"
-        return
-    fi
-    
-    curl -Ls https://nxtrace.org/nt.sh | bash
-    
-    if command -v nexttrace &> /dev/null; then
-        print_success "NextTrace 安装完成"
-    else
-        print_warning "NextTrace 安装可能失败，请手动检查"
-    fi
-}
-
-# 安装私有订阅转换引擎 (Subconverter)
-install_subconverter() {
-    print_info "正在安装私有订阅转换引擎 (Subconverter)..."
-    
-    if [ -d "/usr/local/subconverter" ]; then
-        print_success "Subconverter 已安装"
-        return
-    fi
-
-    # 获取最新版本并下载 (针对 x86_64)
-    local ARCH="linux64"
-    if [[ "$(uname -m)" == "aarch64" ]]; then ARCH="aarch64"; fi
-    
-    wget -qO /tmp/subconverter.tar.gz https://github.com/tindy2013/subconverter/releases/latest/download/subconverter_${ARCH}.tar.gz
-    tar -xzf /tmp/subconverter.tar.gz -C /usr/local/
-    rm /tmp/subconverter.tar.gz
-
-    # 创建服务
-    cat > /etc/systemd/system/subconverter.service << EOF
-[Unit]
-Description=Subconverter Service
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/usr/local/subconverter
-ExecStart=/usr/local/subconverter/subconverter
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    systemctl daemon-reload
-    systemctl enable subconverter
-    systemctl start subconverter
-    
-    print_success "Subconverter 私有转换引擎安装成功 (端口: 25500)"
-}
+# 安装私有订阅转换引擎 (Subconverter) - [已移至独立脚本]
 
 # 配置防火墙
 configure_firewall() {
@@ -325,10 +284,9 @@ main() {
     create_swap
     configure_bbr
     install_tools
-    install_nexttrace
     configure_firewall
+    install_nexttrace
     install_3xui
-    install_subconverter
     
     show_report
 }

@@ -16,12 +16,12 @@
 🔗 **在线地址**: [https://kenny-bbdog.github.io/clash-for-anything/](https://kenny-bbdog.github.io/clash-for-anything/)
 
 特点：
-- ✅ 粘贴 VLESS/VMess 链接，一键生成完整配置
-- ✅ **在线订阅转换**：生成私有链接，直接导入 Clash，永久自动同步
-- ✅ 住宅 IP 热插拔配置（防 AI 封号）
-- ✅ 自动包含最优路由规则（WeChat/AI/Google 分流）
-- ✅ 同时生成 Windows 和 Android 版本
-- ✅ 纯前端运行，不上传任何数据
+- ✅ **私人节点仓库 (Warehouse)**：节点永久保存，增量添加，不再需要每次寻找旧链接
+- ✅ **全协议支持**：一键生成适用于 **Clash, Shadowrocket, Quantumult X, Surge** 的聚合订阅链接
+- ✅ **转换中心 IP (VPS Hub)**：利用你私有的 VPS 引擎进行云端转换，安全且便携
+- ✅ **双模式输出**：支持“云端订阅”（一键同步）与“本地文件下载”（离线备份）
+- ✅ **住宅 IP (SOCKS5)**：完美集成住宅代理，AI 流量自动分流。
+- ✅ **极简扁平 UI**：完全弃用花哨动效，回归纯粹的工业化工具体验。
 
 ### 2️⃣ VPS 一键部署
 
@@ -34,16 +34,21 @@ bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything
 自动完成：
 - ✅ 创建 SWAP（保命内存）
 - ✅ 启用 BBR + TCP 深度优化
-- ✅ 安装 3x-ui 面板
-- ✅ 安装 NextTrace（路由测试）
-- ✅ **安装 Subconverter（私有订阅转换后端）**
-- ✅ 配置防火墙（自动开放 25500 端口）
+- ✅ 自动安装工具并配置防火墙
+- ✅ 自动安装 3x-ui 面板 (MHSanaei 版)
+- ✅ 自动安装 NextTrace 路由测试工具
 
 ---
 
-## 📸 在线工具截图
+### 3️⃣ (推荐) 私有订阅中心安装
+为了配合网页端的“私人仓库”功能实现全自动同步，建议在上述 VPS 上额外执行：
 
-![配置生成器](https://via.placeholder.com/800x400/1a1a2e/00d4ff?text=Clash+Config+Generator)
+```bash
+bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/vps-setup/install-subconverter.sh)
+```
+- ✅ 一键开启私有 Subconverter 服务
+- ✅ 自动配置 Systemd 守护进程
+- ✅ 自动放行 25500 转换端口
 
 ---
 
@@ -52,10 +57,11 @@ bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything
 ### 方法一：在线工具（最简单）
 
 1. 打开 [在线配置生成器](https://kenny-bbdog.github.io/clash-for-anything/)
-2. 粘贴你的 VLESS/VMess 链接
-3. （可选）配置住宅 IP 代理
-4. 输入你的 **VPS IP**（用于生成订阅链接）
-5. 点击 **“复制在线订阅链接”**
+2. 在左侧粘贴节点链接，点击 **“存入我的私人仓库”**
+3. （可选）配置住宅代理（SOCKS5）
+4. 在右侧输入你的 **转换中心 IP (VPS Hub)** 
+   *(需确保已执行上述第 3 步安装命令)*
+5. 点击 **“生成并复制总订阅链接”**
 6. 在 Clash 软件中新增订阅，粘贴链接即可！
 
 ### 方法二：命令行工具
@@ -157,11 +163,15 @@ clash-for-anything/
 
 ## 📝 更新日志
 
+### v3.1.0 (2026-01-23)
+- 📦 **核心重构：私人节点仓库模式**。支持节点增量添加、可视化管理及永久保存。
+- 🌍 **全协议适配**：一键导出为 Clash, Shadowrocket, Quantumult X, Surge, V2Ray 等多种订阅格式。
+- 🎨 **UI 深度重塑**：改用极简扁平化现代设计，大幅提升操作效率。
+- ⚙️ **逻辑链路优化**：明确“转换中心 IP”与“节点服务器 IP”的区别，支持 IP 自动提取。
+
 ### v1.2.0 (2026-01-23)
-- 🚀 **重大更新：支持私有订阅转换**
-- ✅ VPS 脚本集成 Subconverter 引擎
-- ✅ 网页端支持“一键生成订阅链接”，免去手动传文件的烦恼
-- ✅ 路由规则升级为动态云端模式
+- 🚀 **私有订阅生成器**：VPS 脚本集成 Subconverter 引擎，支持云端自动同步。
+- ✅ 路由规则升级为动态云端模式。
 
 ### v1.1.0 (2026-01-23)
 - 🎉 新增在线配置生成器（纯前端）
