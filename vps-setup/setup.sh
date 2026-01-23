@@ -86,29 +86,21 @@ create_swap() {
 
 # BBR 优化
 configure_bbr() {
-    print_info "配置 BBR 和 TCP 优化参数..."
+    print_info "配置 BBR 和 TCP 深度优化参数 (2026 极致调优版)..."
     
     cat > /etc/sysctl.d/99-bbr-optimize.conf << 'EOF'
 # ============================================================
-# BBR 及 TCP 深度优化参数 (跨海传输调优)
+# BBR 及 TCP 深度优化参数 (极致跨海传输调优)
 # ============================================================
 
-# 启用 BBR
+# 核心 BBR 开启
 net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
 
-# TCP Fast Open
+# TCP Fast Open (加速握手)
 net.ipv4.tcp_fastopen = 3
 
-# TCP 优化
-net.ipv4.tcp_sack = 1
-net.ipv4.tcp_fack = 1
-net.ipv4.tcp_recovery = 1
-net.ipv4.tcp_slow_start_after_idle = 0
-net.ipv4.tcp_timestamps = 1
-net.ipv4.tcp_window_scaling = 1
-
-# 缓冲区优化 (适合高带宽高延迟)
+# 网络缓冲区优化 (适配 190ms+ 高延迟 & 1Gbps+ 高带宽)
 net.core.rmem_max = 67108864
 net.core.wmem_max = 67108864
 net.core.rmem_default = 1048576
@@ -116,34 +108,48 @@ net.core.wmem_default = 1048576
 net.ipv4.tcp_rmem = 4096 87380 67108864
 net.ipv4.tcp_wmem = 4096 65536 67108864
 net.ipv4.tcp_mem = 65536 131072 262144
-net.ipv4.udp_mem = 65536 131072 262144
 
-# 减少延迟
+# 传输效率优化
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_fack = 1
+net.ipv4.tcp_recovery = 1
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_adv_win_scale = -2
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv4.tcp_ecn = 0
+
+# 减少延迟 (Lower Latency)
 net.ipv4.tcp_notsent_lowat = 16384
+net.ipv4.tcp_frto = 0
+net.ipv4.tcp_mtu_probing = 0
+
+# 挥手与超时优化
 net.ipv4.tcp_fin_timeout = 15
 net.ipv4.tcp_keepalive_time = 300
 net.ipv4.tcp_keepalive_intvl = 30
 net.ipv4.tcp_keepalive_probes = 3
+net.ipv4.tcp_rfc1337 = 1
 
-# 连接队列优化
+# 连接队列与突发流量处理
 net.core.somaxconn = 65535
 net.core.netdev_max_backlog = 65535
 net.ipv4.tcp_max_syn_backlog = 65535
 net.ipv4.tcp_max_tw_buckets = 65535
 net.ipv4.tcp_tw_reuse = 1
 
-# IPv6 (可选禁用)
-# net.ipv6.conf.all.disable_ipv6 = 1
-# net.ipv6.conf.default.disable_ipv6 = 1
+# 文件描述符限制
+fs.file-max = 1000000
 EOF
 
     sysctl -p /etc/sysctl.d/99-bbr-optimize.conf > /dev/null 2>&1
     
     # 验证 BBR
     if lsmod | grep -q bbr; then
-        print_success "BBR 已启用"
+        print_success "BBR 已成功启动并完成极致调优"
     else
-        print_warning "BBR 可能需要重启后生效"
+        print_warning "BBR 模块未在 lsmod 中发现，可能需要重启系统生效"
     fi
 }
 
