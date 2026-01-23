@@ -68,10 +68,10 @@ elif command -v firewall-cmd &> /dev/null; then
 fi
 
 # 连通性自测
-local PUBLIC_IP=$(curl -s4 ip.sb 2>/dev/null || curl -s4 ifconfig.me 2>/dev/null)
+PUBLIC_IP=$(curl -s4 ip.sb 2>/dev/null || curl -s4 ifconfig.me 2>/dev/null)
 print_info "正在进行 Subconverter 服务自检..."
 sleep 2
-local TEST_SC=$(curl -s --connect-timeout 2 http://localhost:25500/version > /dev/null && echo -e "${GREEN}正常${NC}" || echo -e "${RED}启动失败/端口被占用${NC}")
+TEST_SC=$(curl -s --connect-timeout 2 http://localhost:25500/version > /dev/null && echo -e "${GREEN}正常${NC}" || echo -e "${RED}启动失败/端口被占用${NC}")
 
 echo ""
 echo -e "${CYAN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"

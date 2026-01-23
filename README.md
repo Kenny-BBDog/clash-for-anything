@@ -37,18 +37,11 @@ bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything
 - ✅ 自动安装工具并配置防火墙
 - ✅ 自动安装 3x-ui 面板 (MHSanaei 版)
 - ✅ 自动安装 NextTrace 路由测试工具
+- ✅ **(可选) 交互式安装私有订阅转换中心**
+
+> 💡 **提示**：脚本执行过程中会询问是否安装 `Subconverter`，建议输入 **Y** 以解锁网页端的完整功能。
 
 ---
-
-### 3️⃣ (推荐) 私有订阅中心安装
-为了配合网页端的“私人仓库”功能实现全自动同步，建议在上述 VPS 上额外执行：
-
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/vps-setup/install-subconverter.sh)
-```
-- ✅ 一键开启私有 Subconverter 服务
-- ✅ 自动配置 Systemd 守护进程
-- ✅ 自动放行 25500 转换端口
 
 ## 🛠️ 部署自检表 (必读)
 

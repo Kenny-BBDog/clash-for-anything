@@ -238,6 +238,17 @@ show_report() {
     local TEST_XUI=$(curl -s --connect-timeout 2 $XUI_URL > /dev/null && echo -e "${GREEN}正常${NC}" || echo -e "${YELLOW}待验证 (可能需刷新防火墙)${NC}")
     
     echo ""
+    # Subconverter 状态
+    local SC_STATUS=""
+    local SC_INFO=""
+    if curl -s --connect-timeout 2 http://localhost:25500/version > /dev/null; then
+        SC_STATUS="${GREEN}运行中${NC}"
+        SC_INFO="- 转换中心:  ${YELLOW}http://${PUBLIC_IP}:25500${NC}"
+    else
+        SC_STATUS="${YELLOW}未安装/未运行${NC}"
+    fi
+
+    echo ""
     echo -e "${CYAN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
     echo -e "${CYAN}┃                 🎉 部署完成！请保存以下信息                 ┃${NC}"
     echo -e "${CYAN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
@@ -250,6 +261,12 @@ show_report() {
     echo -e "${CYAN}┃${NC}  - 默认内容:  用户: ${YELLOW}admin${NC} / 密码: ${YELLOW}admin${NC}"
     echo -e "${CYAN}┃${NC}  - 运行状态:  $TEST_XUI"
     echo -e "${CYAN}┃${NC}"
+    if [ -n "$SC_INFO" ]; then
+    echo -e "${CYAN}┃${NC}  🔋 【私有转换引擎】"
+    echo -e "${CYAN}┃${NC}  $SC_INFO"
+    echo -e "${CYAN}┃${NC}  - 运行状态:  $SC_STATUS"
+    echo -e "${CYAN}┃${NC}"
+    fi
     echo -e "${CYAN}┃${NC}  🔧 【常用命令】"
     echo -e "${CYAN}┃${NC}  - 管理面板:  x-ui (输入该命令可修改端口/重置密码)"
     echo -e "${CYAN}┃${NC}  - 路由测试:  nexttrace 8.8.8.8"
@@ -276,6 +293,17 @@ main() {
     configure_firewall
     install_nexttrace
     install_3xui
+    
+    # 交互式询问安装私有订阅转换中心
+    echo ""
+    echo -e "${YELLOW}❓ 是否同时安装私有订阅转换中心 (Subconverter)? [Y/n] ${NC}"
+    read -p "" install_sc
+    if [[ "$install_sc" =~ ^[Yy]$ || -z "$install_sc" ]]; then
+        print_info "正在为您自动安装 Subconverter..."
+        bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/vps-setup/install-subconverter.sh)
+    else
+        print_info "已跳过 Subconverter 安装。"
+    fi
     
     show_report
 }
