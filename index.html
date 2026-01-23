@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clash Control | Kenny-BBDog</title>
+    <title>Clash Control | Master Warehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap"
         rel="stylesheet">
     <style>
@@ -34,7 +34,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -43,6 +43,9 @@
             margin-bottom: 40px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
 
         h1 {
@@ -54,6 +57,18 @@
         .tagline {
             font-size: 0.875rem;
             color: var(--text-mute);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .section {
@@ -91,7 +106,6 @@
             border: 1px solid var(--border);
             padding: 12px;
             color: var(--text);
-            font-family: inherit;
             font-size: 0.95rem;
             margin-bottom: 16px;
             border-radius: 4px;
@@ -99,94 +113,110 @@
         }
 
         textarea {
-            height: 160px;
+            height: 120px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-        }
-
-        textarea:focus,
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 24px;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             border: none;
             border-radius: 4px;
-            transition: all 0.2s;
-            width: 100%;
-            text-decoration: none;
+            transition: 0.2s;
+            gap: 8px;
         }
 
         .btn-primary {
             background: var(--primary);
             color: white;
+            width: 100%;
         }
 
         .btn-primary:hover {
             background: #2563eb;
         }
 
-        .btn-secondary {
+        .btn-add {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-danger {
             background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
+            border: 1px solid var(--danger);
+            color: var(--danger);
         }
 
-        .btn-secondary:hover {
-            background: var(--border);
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
         }
 
-        .res-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
+        /* Node List Items */
+        .node-list {
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .node-item {
             background: var(--bg);
+            padding: 12px 16px;
             border: 1px solid var(--border);
-            margin-bottom: 16px;
-            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-radius: 4px;
         }
 
-        .res-toggle.active {
-            border-color: var(--accent);
+        .node-info {
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 80%;
         }
 
-        .result-box {
+        .node-type {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            background: #333;
+            border-radius: 3px;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        .result-zone {
             background: #000;
-            padding: 20px;
-            border: 1px solid var(--accent);
+            padding: 24px;
+            border: 1px solid var(--primary);
             border-radius: 4px;
             display: none;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
-        .sub-link {
-            word-break: break-all;
+        .sub-link-display {
+            background: #111;
+            padding: 16px;
+            border: 1px dashed #444;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            color: var(--accent);
-            background: #111;
-            padding: 15px;
-            border-radius: 4px;
-            border: 1px dashed #333;
-            margin-bottom: 15px;
+            color: var(--primary);
+            word-break: break-all;
+            margin-bottom: 16px;
         }
 
-        .chip {
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            border-radius: 4px;
-            background: var(--bg);
-            border: 1px solid var(--border);
+        .res-box {
+            border-left: 3px solid var(--accent);
+            background: rgba(16, 185, 129, 0.05);
         }
     </style>
 </head>
@@ -194,187 +224,225 @@
 <body>
     <div class="container">
         <header>
-            <h1>CLASH CONTROL <span style="font-weight: 300; color: var(--text-mute);">2.0</span></h1>
-            <p class="tagline">Modern Subscription Converter & Residential IP Router</p>
+            <div>
+                <h1>CLASH CONTROL <span style="font-weight: 300; color: var(--text-mute);">WAREHOUSE</span></h1>
+                <p class="tagline">私人节点仓库 · 增量管理 · 多协议同步</p>
+            </div>
+            <div id="stats" style="font-size: 0.8rem; color: var(--accent);">正在加载仓库...</div>
         </header>
 
-        <!-- 1. Nodes Input -->
-        <div class="section">
-            <div class="section-title">01 / 节点源数据</div>
-            <label class="input-label">粘贴 VLESS / VMess 链接 (每行一个)</label>
-            <textarea id="links" oninput="saveLocalRes()" placeholder="vless://...&#10;vmess://..."></textarea>
-
-            <label class="input-label">你的 VPS 公网 IP (用于解析订阅)</label>
-            <input type="text" id="vps-ip" oninput="saveLocalRes()" placeholder="例如: 1.2.3.4">
-        </div>
-
-        <!-- 2. Optional: Residential IP -->
-        <div class="section">
-            <div class="section-title">02 / 住宅 IP (可选) <span class="chip">PRIVATE LOCAL</span></div>
-            <p style="font-size: 0.8rem; color: var(--text-mute); margin-bottom: 15px;">数据仅存于本地浏览器。开启后 AI 流量将自动路由至此 IP。
-            </p>
-
-            <div class="res-toggle" id="res-toggle" onclick="toggleRes(this)">
-                <span>启用住宅代理转发</span>
-                <span id="res-status-dot" style="width:8px; height:8px; border-radius:50%; background: #333;"></span>
-            </div>
-
-            <div id="res-fields" style="display: none;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label class="input-label">Host</label>
-                        <input type="text" id="res-host" placeholder="161.77.x.x" oninput="saveLocalRes()">
-                    </div>
-                    <div>
-                        <label class="input-label">Port</label>
-                        <input type="text" id="res-port" placeholder="12324" oninput="saveLocalRes()">
-                    </div>
+        <div class="main-grid">
+            <!-- Left: Node Management -->
+            <div class="left-col">
+                <div class="section">
+                    <div class="section-title">📥 存入新节点</div>
+                    <textarea id="incoming-links" placeholder="粘贴新的 vless://, vmess://, ss:// 链接..."></textarea>
+                    <button class="btn btn-add" onclick="addNodes()">➕ 将这些节点存入仓库</button>
+                    <p style="font-size: 0.75rem; color: var(--text-mute); margin-top: 10px;">支持批量粘贴。存入后系统会自动永久保存。</p>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label class="input-label">User</label>
-                        <input type="text" id="res-user" placeholder="Username" oninput="saveLocalRes()">
-                    </div>
-                    <div>
-                        <label class="input-label">Password</label>
-                        <input type="password" id="res-pass" placeholder="Password" oninput="saveLocalRes()">
+
+                <div class="section">
+                    <div class="section-title">📦 我的节点仓库 (<span id="node-count">0</span>) <button class="btn btn-danger"
+                            style="padding: 2px 8px; font-size: 0.7rem;" onclick="clearWarehouse()">清空库</button></div>
+                    <div class="node-list" id="warehouse-display">
+                        <div style="text-align: center; color: var(--text-mute); padding: 40px;">仓库目前是空的</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 3. Actions -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
-            <button class="btn btn-primary" onclick="generateLink()">生成并复制订阅链接</button>
-            <button class="btn btn-secondary" onclick="downloadYaml()">下载 .YAML</button>
-        </div>
+            <!-- Right: Settings & Generator -->
+            <div class="right-col">
+                <div class="section">
+                    <div class="section-title">⚙️ 配置</div>
+                    <label class="input-label">我的 VPS 公网 IP</label>
+                    <input type="text" id="vps-ip" placeholder="例如: 1.2.3.4" oninput="saveSettings()">
 
-        <!-- Result -->
-        <div class="result-box" id="result">
-            <div class="section-title" style="color: var(--accent);">✅ 订阅链接就绪</div>
-            <div class="sub-link" id="sub-url-text">等待生成...</div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-secondary" onclick="copyLink()">复制链接</button>
-                <button class="btn btn-secondary" onclick="previewYaml()">预览配置原文</button>
+                    <label class="input-label">目标客户端</label>
+                    <select id="target" onchange="saveSettings()">
+                        <option value="clash">Clash (Win/Android)</option>
+                        <option value="shadowrocket">Shadowrocket (iOS)</option>
+                        <option value="quantumult_x">Quantumult X</option>
+                        <option value="surge">Surge</option>
+                        <option value="v2ray">V2Ray / Clash Meta</option>
+                    </select>
+
+                    <div class="res-box section" style="padding:15px; border-radius:0;">
+                        <label class="input-label" style="display:flex; justify-content: space-between;">
+                            🏠 住宅 IP (可选)
+                            <input type="checkbox" id="res-enabled" onchange="toggleRes(this)">
+                        </label>
+                        <div id="res-fields" style="display: none; margin-top:10px;">
+                            <input type="text" id="res-host" placeholder="Host" style="font-size:0.8rem;"
+                                oninput="saveSettings()">
+                            <input type="text" id="res-port" placeholder="Port" style="font-size:0.8rem;"
+                                oninput="saveSettings()">
+                            <input type="text" id="res-user" placeholder="User" style="font-size:0.8rem;"
+                                oninput="saveSettings()">
+                            <input type="password" id="res-pass" placeholder="Pass" style="font-size:0.8rem;"
+                                oninput="saveSettings()">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateSubscription()">✨ 生成 & 复制总订阅链接</button>
+                </div>
             </div>
-            <pre id="yaml-preview"
-                style="display:none; margin-top: 20px; font-size: 0.75rem; color: var(--text-mute); overflow-x: auto; max-height: 400px; padding: 10px; background: #080808;"></pre>
+        </div>
+
+        <!-- Final Subscription Link Result -->
+        <div class="result-zone" id="result-zone">
+            <div class="section-title" style="color: var(--primary);">聚合订阅链接已生成</div>
+            <div class="sub-link-display" id="sub-url-result"></div>
+            <p style="font-size: 0.8rem; color: var(--text-mute); margin-bottom: 20px;">
+                只要你的仓库变动，重新点击生成即可。导入软件后，以后只需通过“更新”同步。</p>
+            <button class="btn btn-primary" style="background:#333; color:#fff;" onclick="copyResult()">复制链接</button>
         </div>
     </div>
 
     <script>
-        // 核心逻辑: 保持极简且功能完整
+        let warehouse = [];
+        const LS_KEY = 'clash_warehouse_v3';
+
         window.onload = () => {
-            const saved = localStorage.getItem('clash_control_v2');
+            const saved = localStorage.getItem(LS_KEY);
             if (saved) {
                 const data = JSON.parse(saved);
-                document.getElementById('links').value = data.links || '';
+                warehouse = data.nodes || [];
                 document.getElementById('vps-ip').value = data.vps_ip || '';
-                document.getElementById('res-host').value = data.r_host || '';
-                document.getElementById('res-port').value = data.r_port || '';
-                document.getElementById('res-user').value = data.r_user || '';
-                document.getElementById('res-pass').value = data.r_pass || '';
-                if (data.r_enabled) toggleRes(document.getElementById('res-toggle'));
+                document.getElementById('target').value = data.target || 'clash';
+                document.getElementById('res-enabled').checked = data.res_enabled || false;
+                document.getElementById('res-host').value = data.res_host || '';
+                document.getElementById('res-port').value = data.res_port || '';
+                document.getElementById('res-user').value = data.res_user || '';
+                document.getElementById('res-pass').value = data.res_pass || '';
+
+                if (data.res_enabled) document.getElementById('res-fields').style.display = 'block';
             }
+            updateUI();
         };
 
-        function toggleRes(el) {
-            el.classList.toggle('active');
-            const active = el.classList.contains('active');
-            document.getElementById('res-status-dot').style.background = active ? 'var(--accent)' : '#333';
-            document.getElementById('res-fields').style.display = active ? 'block' : 'none';
-            saveLocalRes();
+        function addNodes() {
+            const raw = document.getElementById('incoming-links').value.trim();
+            if (!raw) return;
+
+            const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+            lines.forEach(l => {
+                if (!warehouse.includes(l)) warehouse.push(l);
+            });
+
+            // 智能提取 IP (如果当前为空)
+            const vpsIp = document.getElementById('vps-ip');
+            if (!vpsIp.value) {
+                const match = lines[0].match(/@([^:?#]+)/);
+                if (match && match[1] && !['127.0.0.1', 'localhost'].includes(match[1])) {
+                    vpsIp.value = match[1];
+                }
+            }
+
+            document.getElementById('incoming-links').value = '';
+            saveAndRefresh();
         }
 
-        function saveLocalRes() {
-            const data = {
-                links: document.getElementById('links').value,
-                vps_ip: document.getElementById('vps-ip').value,
-                r_enabled: document.getElementById('res-toggle').classList.contains('active'),
-                r_host: document.getElementById('res-host').value,
-                r_port: document.getElementById('res-port').value,
-                r_user: document.getElementById('res-user').value,
-                r_pass: document.getElementById('res-pass').value
-            };
-            localStorage.setItem('clash_control_v2', JSON.stringify(data));
+        function removeNode(idx) {
+            warehouse.splice(idx, 1);
+            saveAndRefresh();
+        }
 
-            // 智能提取 IP：如果 VPS IP 为空，尝试从 VLESS 链接中提取
-            if (data.links && !data.vps_ip) {
-                // 匹配 @ 符号后的 IP 或域名，直到遇到端口或路径
-                const match = data.links.match(/@([^:?#]+)/);
-                if (match && match[1]) {
-                    const extracted = match[1];
-                    // 过滤掉一些明显的占位符或本地 IP
-                    if (!['127.0.0.1', 'localhost', 'server'].includes(extracted)) {
-                        document.getElementById('vps-ip').value = extracted;
-                        // 递归调用一次以保存自动填充的值
-                        saveLocalRes();
-                    }
-                }
+        function clearWarehouse() {
+            if (confirm("确定要删除仓库里的所有节点吗？")) {
+                warehouse = [];
+                saveAndRefresh();
             }
         }
 
-        function generateLink() {
-            const rawLinks = document.getElementById('links').value.trim();
+        function toggleRes(cb) {
+            document.getElementById('res-fields').style.display = cb.checked ? 'block' : 'none';
+            saveSettings();
+        }
+
+        function saveSettings() {
+            const data = {
+                nodes: warehouse,
+                vps_ip: document.getElementById('vps-ip').value,
+                target: document.getElementById('target').value,
+                res_enabled: document.getElementById('res-enabled').checked,
+                res_host: document.getElementById('res-host').value,
+                res_port: document.getElementById('res-port').value,
+                res_user: document.getElementById('res-user').value,
+                res_pass: document.getElementById('res-pass').value
+            };
+            localStorage.setItem(LS_KEY, JSON.stringify(data));
+        }
+
+        function saveAndRefresh() {
+            saveSettings();
+            updateUI();
+        }
+
+        function updateUI() {
+            const count = warehouse.length;
+            document.getElementById('node-count').innerText = count;
+            document.getElementById('stats').innerText = `仓库健康: ${count} 个有效节点已保护`;
+
+            const listEl = document.getElementById('warehouse-display');
+            if (count === 0) {
+                listEl.innerHTML = '<div style="text-align: center; color: var(--text-mute); padding: 40px;">仓库目前是空的</div>';
+                return;
+            }
+
+            listEl.innerHTML = warehouse.map((link, i) => {
+                const nameMatch = link.match(/#(.+)$/);
+                const name = nameMatch ? decodeURIComponent(nameMatch[1]) : `节点 ${i + 1}`;
+                const type = link.split('://')[0].toUpperCase();
+                return `
+                    <div class="node-item">
+                        <div class="node-info">
+                            <span class="node-type">${type}</span>
+                            ${name}
+                        </div>
+                        <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.75rem;" onclick="removeNode(${i})">删除</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateSubscription() {
             const vpsIp = document.getElementById('vps-ip').value.trim();
+            if (!vpsIp) { alert("必须输入你的 VPS IP 以连接私有转换引擎"); return; }
+            if (warehouse.length === 0) { alert("仓库里还没有节点，请先添加"); return; }
 
-            if (!rawLinks) { alert("请输入节点链接！"); return; }
-            if (!vpsIp) { alert("请输入 VPS IP 以生成订阅地址！"); return; }
+            const target = document.getElementById('target').value;
+            let currentNodes = [...warehouse];
 
-            let combinedLinks = rawLinks.split('\n').map(l => l.trim()).filter(l => l);
-
-            // 如果启用了住宅 IP，构造一个特殊节点加入列表
-            const isRes = document.getElementById('res-toggle').classList.contains('active');
-            if (isRes) {
+            // 处理住宅 IP
+            if (document.getElementById('res-enabled').checked) {
                 const rH = document.getElementById('res-host').value.trim();
                 const rP = document.getElementById('res-port').value.trim();
                 const rU = document.getElementById('res-user').value.trim();
                 const rW = document.getElementById('res-pass').value.trim();
                 if (rH && rP) {
-                    // 构造 Socks5 链接格式供 Subconverter 解析
-                    const resLink = `socks://${rU}:${rW}@${rH}:${rP}#住宅IP`;
-                    combinedLinks.push(resLink);
+                    currentNodes.push(`socks://${rU}:${rW}@${rH}:${rP}#住宅IP (Residential)`);
                 }
             }
 
-            const encodedUrls = combinedLinks.map(l => encodeURIComponent(l)).join('%7C');
+            const encodedUrls = currentNodes.map(l => encodeURIComponent(l)).join('%7C');
             const configUrl = "https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/clash-converter/templates/base-rules.yaml";
 
-            const finalUrl = `http://${vpsIp}:25500/sub?target=clash&url=${encodedUrls}&config=${encodeURIComponent(configUrl)}&emoji=true&list=false&udp=true&scv=true`;
+            let url = `http://${vpsIp}:25500/sub?target=${target}&url=${encodedUrls}`;
+            if (['clash', 'quantumult_x', 'surge'].includes(target)) {
+                url += `&config=${encodeURIComponent(configUrl)}`;
+            }
+            url += `&emoji=true&list=false&udp=true&scv=true`;
 
-            document.getElementById('sub-url-text').innerText = finalUrl;
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('yaml-preview').style.display = 'none'; // 重置预览
+            document.getElementById('sub-url-result').innerText = url;
+            document.getElementById('result-zone').style.display = 'block';
 
-            copyToClipboard(finalUrl);
+            navigator.clipboard.writeText(url);
+            alert("✅ 总订阅链接已生成并复制到剪贴板！\n\n导入 Clash 后，以后你只需在网页添加新节点，然后在应用里点更新即可。");
         }
 
-        function downloadYaml() {
-            alert("正在浏览器本地生成 YAML...\n\n提示：此模式仅生成当前配置，无法实现后续自动更新。\n推荐使用左侧的『订阅链接』模式。");
-            // 这里我们跳转到生成的示例，实际用户可以通过预览功能复制全文
-            window.open('https://github.com/Kenny-BBDog/clash-for-anything/blob/main/configs/DMIT_Local.yaml');
-        }
-
-        function copyLink() {
-            copyToClipboard(document.getElementById('sub-url-text').innerText);
-            alert("已复制到剪贴板！可以直接在 Clash 中订阅。");
-        }
-
-        function copyToClipboard(txt) {
-            navigator.clipboard.writeText(txt);
-        }
-
-        function previewYaml() {
-            const pre = document.getElementById('yaml-preview');
-            pre.innerText = "正在请求 VPS 实时生成预览...\n(注意：如果 VPS 无法访问，预览将失败。建议直接导入 Clash 查看结果)";
-            pre.style.display = 'block';
-
-            const link = document.getElementById('sub-url-text').innerText;
-            fetch(link).then(r => r.text()).then(t => {
-                pre.innerText = t;
-            }).catch(e => {
-                pre.innerText = "预览失败。原因可能是 VPS 的 25500 端口未开放或跨域限制。\n\n但这不影响你在 Clash 软件里使用该链接。";
-            });
+        function copyResult() {
+            navigator.clipboard.writeText(document.getElementById('sub-url-result').innerText);
+            alert("已复制！");
         }
     </script>
 </body>
