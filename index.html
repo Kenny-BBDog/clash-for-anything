@@ -4,689 +4,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clash Ultimate Center | Kenny-BBDog</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap"
+    <title>Clash Control | Kenny-BBDog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.4);
-            --secondary: #7000ff;
-            --bg: #030305;
-            --surface: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #ffffff;
-            --text-mute: #888;
-            --success: #00ff9d;
-            --warning: #ffcc00;
+            --bg: #0f1115;
+            --surface: #1a1d23;
+            --border: #2d3139;
+            --primary: #3b82f6;
+            --text: #e2e8f0;
+            --text-mute: #94a3b8;
+            --accent: #10b981;
+            --danger: #ef4444;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            outline: none;
         }
 
         body {
-            background: var(--bg);
+            background-color: var(--bg);
             color: var(--text);
-            font-family: 'Outfit', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-            background-image:
-                radial-gradient(circle at top right, rgba(112, 0, 255, 0.15), transparent 40%),
-                radial-gradient(circle at bottom left, rgba(0, 242, 255, 0.1), transparent 40%);
-        }
-
-        /* 极光动效背景 */
-        .aurora {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            filter: blur(100px);
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .aurora-blob {
-            position: absolute;
-            width: 50vw;
-            height: 50vw;
-            border-radius: 50%;
-            animation: move 20s infinite alternate;
-        }
-
-        @keyframes move {
-            from {
-                transform: translate(-10%, -10%);
-            }
-
-            to {
-                transform: translate(20%, 20%);
-            }
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 40px 20px;
         }
 
-        /* Header */
         header {
-            text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
         }
 
         h1 {
-            font-size: 4.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -2px;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
         }
 
         .tagline {
+            font-size: 0.875rem;
             color: var(--text-mute);
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
         }
 
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 30px;
-        }
-
-        @media (max-width: 1000px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Cards */
-        .card {
+        .section {
             background: var(--surface);
-            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 32px;
-            padding: 40px;
-            position: relative;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 4px;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            border-radius: 32px;
-            background: linear-gradient(135deg, var(--border), transparent);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        h2 {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: var(--primary);
-        }
-
-        /* Inputs */
-        .input-group {
-            margin-bottom: 30px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--text-mute);
-            margin-bottom: 10px;
+        .section-title {
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-mute);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         textarea,
         input,
         select {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 18px;
-            color: #fff;
-            font-size: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 12px;
+            color: var(--text);
             font-family: inherit;
-        }
-
-        textarea:focus,
-        input:focus,
-        select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 30px var(--primary-glow);
-            background: rgba(0, 0, 0, 0.5);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            transition: border-color 0.2s;
         }
 
         textarea {
-            height: 200px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
+            height: 160px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
         }
 
-        /* Buttons */
+        textarea:focus,
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         .btn {
-            padding: 18px 32px;
-            border-radius: 16px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
             justify-content: center;
-        }
-
-        .btn-magic {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: all 0.2s;
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0, 242, 255, 0.2);
+            text-decoration: none;
         }
 
-        .btn-magic:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 50px rgba(0, 242, 255, 0.4);
+        .btn-primary {
+            background: var(--primary);
+            color: white;
         }
 
-        .btn-outline {
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
             background: transparent;
             border: 1px solid var(--border);
-            color: #fff;
+            color: var(--text);
         }
 
-        .btn-outline:hover {
-            border-color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+        .btn-secondary:hover {
+            background: var(--border);
         }
 
-        /* Toggles */
-        .toggle-zone {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .toggle-item {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 15px;
-            border-radius: 16px;
+        .res-toggle {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            cursor: pointer;
+            padding: 12px;
+            background: var(--bg);
             border: 1px solid var(--border);
-            transition: 0.3s;
+            margin-bottom: 16px;
+            cursor: pointer;
+            border-radius: 4px;
         }
 
-        .toggle-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+        .res-toggle.active {
+            border-color: var(--accent);
         }
 
-        .toggle-item.active {
-            border-color: var(--primary);
-            background: rgba(0, 242, 255, 0.05);
-        }
-
-        /* Residential Module */
-        .res-module {
-            border: 1px solid var(--warning);
-            padding: 25px;
-            border-radius: 20px;
-            background: rgba(255, 204, 0, 0.03);
+        .result-box {
+            background: #000;
+            padding: 20px;
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            display: none;
             margin-top: 20px;
         }
 
-        .res-title {
-            color: var(--warning);
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-
-        /* Result Area */
-        .result-zone {
-            display: none;
-            margin-top: 50px;
-            animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-        }
-
-        .code-wrap {
-            background: #000;
-            border-radius: 24px;
-            padding: 30px;
-            border: 1px solid var(--primary);
-            position: relative;
-        }
-
-        pre {
-            font-family: 'Fira Code', monospace;
+        .sub-link {
+            word-break: break-all;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            color: #ccc;
-            overflow: auto;
-            max-height: 600px;
-            line-height: 1.6;
+            color: var(--accent);
+            background: #111;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px dashed #333;
+            margin-bottom: 15px;
         }
 
-        .actions {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Chips */
         .chip {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 12px;
-            border-radius: 100px;
+            padding: 4px 8px;
             font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--primary);
-            border: 1px solid var(--primary-glow);
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 100px;
-            text-align: center;
-            padding-bottom: 50px;
-            font-size: 0.9rem;
-            color: var(--text-mute);
-        }
-
-        footer a {
-            color: var(--text);
-            text-decoration: none;
-            border-bottom: 1px solid var(--primary);
-        }
-
-        /* 状态指示 */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: var(--success);
-            margin-top: 15px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 10px var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 0.4;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.4;
-            }
+            border-radius: 4px;
+            background: var(--bg);
+            border: 1px solid var(--border);
         }
     </style>
 </head>
 
 <body>
-    <div class="aurora">
-        <div class="aurora-blob" style="background: var(--primary); top: -10%; left: -10%;"></div>
-        <div class="aurora-blob" style="background: var(--secondary); bottom: -10%; right: -10%;"></div>
-    </div>
-
     <div class="container">
         <header>
-            <h1>CLASH ULTIMATE</h1>
-            <p class="tagline">The Final Proxy Automation Control Center</p>
+            <h1>CLASH CONTROL <span style="font-weight: 300; color: var(--text-mute);">2.0</span></h1>
+            <p class="tagline">Modern Subscription Converter & Residential IP Router</p>
         </header>
 
-        <div class="main-grid">
-            <!-- Left: Node and Config -->
-            <div class="card">
-                <h2>⚡ 核心数据处理</h2>
+        <!-- 1. Nodes Input -->
+        <div class="section">
+            <div class="section-title">01 / 节点源数据</div>
+            <label class="input-label">粘贴 VLESS / VMess 链接 (每行一个)</label>
+            <textarea id="links" oninput="saveLocalRes()" placeholder="vless://...&#10;vmess://..."></textarea>
 
-                <div class="input-group">
-                    <label>输入 VLESS / VMess / Shadowsocks 链接</label>
-                    <textarea id="links"
-                        placeholder="vless://...&#10;vmess://...&#10;支持批量粘贴，直接把你的所有节点丢进来..."></textarea>
-                </div>
+            <label class="input-label">你的 VPS 公网 IP (用于解析订阅)</label>
+            <input type="text" id="vps-ip" oninput="saveLocalRes()" placeholder="例如: 1.2.3.4">
+        </div>
 
-                <div class="toggle-zone">
-                    <div class="toggle-item active" onclick="toggleOption(this, 'win')">
-                        <span>Windows (Mihomo)</span>
-                        <input type="checkbox" checked hidden id="opt-win">
-                    </div>
-                    <div class="toggle-item active" onclick="toggleOption(this, 'android')">
-                        <span>Android (Meta)</span>
-                        <input type="checkbox" checked hidden id="opt-android">
-                    </div>
-                    <div class="toggle-item active" onclick="toggleOption(this, 'rule-provider')">
-                        <span>云端规则库 (自动更新)</span>
-                        <input type="checkbox" checked hidden id="opt-provider">
-                    </div>
-                </div>
+        <!-- 2. Optional: Residential IP -->
+        <div class="section">
+            <div class="section-title">02 / 住宅 IP (可选) <span class="chip">PRIVATE LOCAL</span></div>
+            <p style="font-size: 0.8rem; color: var(--text-mute); margin-bottom: 15px;">数据仅存于本地浏览器。开启后 AI 流量将自动路由至此 IP。
+            </p>
 
-                <button class="btn btn-magic" onclick="processMagic()">一键魔法生成配置文件</button>
-
-                <div class="status-badge" id="status" style="display:none;">
-                    <div class="dot"></div> <span id="status-text">系统就绪，等待输入...</span>
-                </div>
+            <div class="res-toggle" id="res-toggle" onclick="toggleRes(this)">
+                <span>启用住宅代理转发</span>
+                <span id="res-status-dot" style="width:8px; height:8px; border-radius:50%; background: #333;"></span>
             </div>
 
-            <!-- Right: Hot-swap Residential -->
-            <div class="card">
-                <div style="display:flex; justify-content: space-between;">
-                    <h2 style="color: var(--warning); margin:0;">🏠 住宅 IP 模块</h2>
-                    <span class="chip">热插拔隔离</span>
-                </div>
-
-                <p style="font-size: 0.85rem; color: var(--text-mute); margin: 20px 0;">配置保存在浏览器本地，即便仓库公开也绝不泄漏。开启后 AI
-                    流量自动走住宅通道。</p>
-
-                <div class="toggle-item" id="res-toggle" onclick="toggleRes(this)">
-                    <span>启用本地住宅代理</span>
-                </div>
-
-                <div id="res-fields" style="display: none; margin-top: 20px;">
-                    <div class="input-group">
-                        <label>Socks5 主机</label>
-                        <input type="text" id="res-host" placeholder="例如: 161.77.227.227" oninput="saveLocalRes()">
+            <div id="res-fields" style="display: none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label class="input-label">Host</label>
+                        <input type="text" id="res-host" placeholder="161.77.x.x" oninput="saveLocalRes()">
                     </div>
-                    <div class="input-group">
-                        <label>端口</label>
+                    <div>
+                        <label class="input-label">Port</label>
                         <input type="text" id="res-port" placeholder="12324" oninput="saveLocalRes()">
                     </div>
-                    <div class="input-group">
-                        <label>账号</label>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label class="input-label">User</label>
                         <input type="text" id="res-user" placeholder="Username" oninput="saveLocalRes()">
                     </div>
-                    <div class="input-group">
-                        <label>密码</label>
+                    <div>
+                        <label class="input-label">Password</label>
                         <input type="password" id="res-pass" placeholder="Password" oninput="saveLocalRes()">
                     </div>
-                    <div class="input-group">
-                        <label>落地转发节点 (热插拔必选)</label>
-                        <select id="res-dialer" onchange="saveLocalRes()">
-                            <option value="">-- 等待解析节点 --</option>
-                        </select>
-                    </div>
-
-                    <div style="border-top: 1px solid var(--border); margin: 30px 0; padding-top: 20px;">
-                        <h2 style="font-size: 1.2rem; margin-bottom: 20px;">🛡️ 私有订阅链接 (推荐)</h2>
-                        <label>你的 VPS 公网 IP</label>
-                        <input type="text" id="vps-ip" placeholder="例如: 1.2.3.4" oninput="saveLocalRes()">
-                        <p style="font-size: 0.75rem; color: var(--text-mute); margin-top: 10px;">输入 IP 后，点击下方按钮生成可以直接导入
-                            Clash 的 URL。</p>
-                        <button class="btn btn-primary" onclick="generateSubLink()"
-                            style="margin-top: 15px; width: 100%; background: var(--surface); border: 1px solid var(--primary); color: var(--primary);">📋
-                            复制在线订阅链接</button>
-                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- 3. Actions -->
+        <button class="btn btn-primary" onclick="generateLink()">生成并复制订阅链接</button>
 
         <!-- Result -->
-        <div class="result-zone" id="result" style="display: none; margin-top: 50px;">
-            <div class="code-wrap">
-                <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                    <h2 style="margin:0;">成品配置文件</h2>
-                    <span id="platform-tag" class="chip">Windows</span>
-                </div>
-                <div class="actions">
-                    <button class="btn btn-outline" style="padding: 10px 20px; font-size: 0.8rem;"
-                        onclick="copyAll()">复制全文</button>
-                    <button class="btn btn-magic" style="padding: 10px 20px; font-size: 0.8rem;"
-                        onclick="downloadFile()">下载 .yaml</button>
-                </div>
-                <pre id="output"></pre>
+        <div class="result-box" id="result">
+            <div class="section-title" style="color: var(--accent);">✅ 订阅链接就绪</div>
+            <div class="sub-link" id="sub-url-text">等待生成...</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="copyLink()">复制链接</button>
+                <button class="btn btn-secondary" onclick="previewYaml()">预览配置原文</button>
             </div>
+            <pre id="yaml-preview"
+                style="display:none; margin-top: 20px; font-size: 0.75rem; color: var(--text-mute); overflow-x: auto; max-height: 400px; padding: 10px; background: #080808;"></pre>
         </div>
-
-        <footer>
-            <p>Built for Kenny-BBDog | Optimized for WeChat & AI Privacy 2026</p>
-            <p style="margin-top: 15px;">纯本地运算，绝不上传。源码托管于 <a
-                    href="https://github.com/Kenny-BBDog/clash-for-anything">GitHub</a></p>
-        </footer>
     </div>
 
     <script>
-        let nodes = [];
-        let finalYaml = "";
-
-        // 初始化
+        // 核心逻辑: 保持极简且功能完整
         window.onload = () => {
-            const savedRes = localStorage.getItem('ultra_res');
-            if (savedRes) {
-                const data = JSON.parse(savedRes);
-                document.getElementById('res-host').value = data.host || '';
-                document.getElementById('res-port').value = data.port || '';
-                document.getElementById('res-user').value = data.user || '';
-                document.getElementById('res-pass').value = data.pass || '';
-                document.getElementById('vps-ip').value = data.vpsIp || '';
-                if (data.enabled) toggleRes(document.getElementById('res-toggle'));
+            const saved = localStorage.getItem('clash_control_v2');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('links').value = data.links || '';
+                document.getElementById('vps-ip').value = data.vps_ip || '';
+                document.getElementById('res-host').value = data.r_host || '';
+                document.getElementById('res-port').value = data.r_port || '';
+                document.getElementById('res-user').value = data.r_user || '';
+                document.getElementById('res-pass').value = data.r_pass || '';
+                if (data.r_enabled) toggleRes(document.getElementById('res-toggle'));
             }
         };
 
-        function toggleOption(el, type) {
-            el.classList.toggle('active');
-            const cb = document.getElementById(`opt-${type}`);
-            cb.checked = !cb.checked;
-        }
-
         function toggleRes(el) {
             el.classList.toggle('active');
-            const show = el.classList.contains('active');
-            document.getElementById('res-fields').style.display = show ? 'block' : 'none';
+            const active = el.classList.contains('active');
+            document.getElementById('res-status-dot').style.background = active ? 'var(--accent)' : '#333';
+            document.getElementById('res-fields').style.display = active ? 'block' : 'none';
             saveLocalRes();
         }
 
         function saveLocalRes() {
             const data = {
-                enabled: document.getElementById('res-toggle').classList.contains('active'),
-                host: document.getElementById('res-host').value,
-                port: document.getElementById('res-port').value,
-                user: document.getElementById('res-user').value,
-                pass: document.getElementById('res-pass').value,
-                dialer: document.getElementById('res-dialer').value,
-                vpsIp: document.getElementById('vps-ip').value
+                links: document.getElementById('links').value,
+                vps_ip: document.getElementById('vps-ip').value,
+                r_enabled: document.getElementById('res-toggle').classList.contains('active'),
+                r_host: document.getElementById('res-host').value,
+                r_port: document.getElementById('res-port').value,
+                r_user: document.getElementById('res-user').value,
+                r_pass: document.getElementById('res-pass').value
             };
-            localStorage.setItem('ultra_res', JSON.stringify(data));
+            localStorage.setItem('clash_control_v2', JSON.stringify(data));
         }
 
-        function generateSubLink() {
-            const links = document.getElementById('links').value.trim();
+        function generateLink() {
+            const rawLinks = document.getElementById('links').value.trim();
             const vpsIp = document.getElementById('vps-ip').value.trim();
 
-            if (!links) { alert("请先粘贴节点链接！"); return; }
-            if (!vpsIp) { alert("请输入你的 VPS IP 用于生成链接！"); return; }
+            if (!rawLinks) { alert("请输入节点链接！"); return; }
+            if (!vpsIp) { alert("请输入 VPS IP 以生成订阅地址！"); return; }
 
-            // 使用 Base64 编码节点链接，防止特殊字符干扰 URL
-            const encodedLinks = btoa(links).replace(/\//g, '_').replace(/\+/g, '-');
-            const subUrl = `http://${vpsIp}:25500/sub?target=clash&url=${links.split('\n').map(l => encodeURIComponent(l.trim())).join('%7C')}&config=https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/clash-converter/templates/base-rules.yaml&emoji=true&list=false&udp=true`;
+            let combinedLinks = rawLinks.split('\n').map(l => l.trim()).filter(l => l);
 
-            navigator.clipboard.writeText(subUrl);
-            alert("✅ 订阅链接已复制！\n\n你可以把这个链接直接粘贴到 Clash Verge 或 Clash for Android 的订阅地址栏中。\n\n只要你的 VPS 开启了，这个链接就永远有效且自动更新。");
-        }
-
-        function parseBatch() {
-            const raw = document.getElementById('links').value;
-            const lines = raw.split('\n');
-            nodes = [];
-            lines.forEach(l => {
-                const link = l.trim();
-                if (!link) return;
-                try {
-                    if (link.startsWith('vless://')) nodes.push(parseVless(link));
-                    else if (link.startsWith('vmess://')) nodes.push(parseVmess(link));
-                } catch (e) { }
-            });
-            updateDialer();
-        }
-
-        function updateDialer() {
-            const sel = document.getElementById('res-dialer');
-            const val = sel.value;
-            sel.innerHTML = '<option value="">-- 选择落地的 VPS 节点 --</option>' +
-                nodes.map(n => `<option value="${n.name}">${n.name}</option>`).join('');
-            if (nodes.find(n => n.name === val)) sel.value = val;
-        }
-
-        function parseVless(link) {
-            const name = decodeURIComponent(link.split('#')[1] || "Server_" + Math.random().toString(36).substr(2, 4));
-            const url = new URL(link.split('#')[0]);
-            const params = new URLSearchParams(url.search);
-            return {
-                name, type: 'vless', server: url.hostname, port: parseInt(url.port),
-                uuid: url.username, tls: params.get('security') === 'reality' || params.get('security') === 'tls',
-                servername: params.get('sni'), flow: params.get('flow'),
-                'reality-opts': params.get('security') === 'reality' ? { 'public-key': params.get('pbk'), 'short-id': params.get('sid') } : null,
-                network: params.get('type') || 'tcp'
-            };
-        }
-
-        function parseVmess(link) {
-            const data = JSON.parse(atob(link.replace('vmess://', '')));
-            return {
-                name: data.ps, type: 'vmess', server: data.add, port: parseInt(data.port),
-                uuid: data.id, alterId: parseInt(data.aid || 0), cipher: 'auto',
-                tls: data.tls === 'tls', network: data.net || 'tcp'
-            };
-        }
-
-        async function processMagic() {
-            parseBatch();
-            if (nodes.length === 0) { alert("没有有效的节点链接！"); return; }
-
-            document.getElementById('status').style.display = 'inline-flex';
-            document.getElementById('status-text').innerText = "正在构建 Ultimate 逻辑架构...";
-
-            const isWin = document.getElementById('opt-win').checked;
-            const useProvider = document.getElementById('opt-provider').checked;
-            const res = JSON.parse(localStorage.getItem('ultra_res') || '{}');
-
-            let yaml = `# Clash Ultimate Generated by Kenny-BBDog\n`;
-            yaml += `port: 7890\nsocks-port: 7891\nmixed-port: 7892\nallow-lan: true\nmode: rule\nlog-level: info\nipv6: false\n`;
-
-            if (isWin) {
-                yaml += `geodata-mode: true\nunified-delay: true\ntcp-concurrent: true\n`;
+            // 如果启用了住宅 IP，构造一个特殊节点加入列表
+            const isRes = document.getElementById('res-toggle').classList.contains('active');
+            if (isRes) {
+                const rH = document.getElementById('res-host').value.trim();
+                const rP = document.getElementById('res-port').value.trim();
+                const rU = document.getElementById('res-user').value.trim();
+                const rW = document.getElementById('res-pass').value.trim();
+                if (rH && rP) {
+                    // 构造 Socks5 链接格式供 Subconverter 解析
+                    const resLink = `socks://${rU}:${rW}@${rH}:${rP}#住宅IP`;
+                    combinedLinks.push(resLink);
+                }
             }
 
-            // DNS
-            yaml += `\ndns:\n  enable: true\n  enhanced-mode: fake-ip\n  fake-ip-range: 198.18.0.1/16\n  nameserver:\n    - https://doh.pub/dns-query\n    - https://dns.alidns.com/dns-query\n  fallback:\n    - https://dns.google/dns-query\n\n`;
+            const encodedUrls = combinedLinks.map(l => encodeURIComponent(l)).join('%7C');
+            const configUrl = "https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/clash-converter/templates/base-rules.yaml";
 
-            // Proxies
-            yaml += `proxies:\n`;
-            nodes.forEach(n => {
-                yaml += `  - {name: "${n.name}", type: ${n.type}, server: ${n.server}, port: ${n.port}, uuid: ${n.uuid}`;
-                if (n.type === 'vmess') yaml += `, alterId: ${n.alterId}, cipher: ${n.cipher}`;
-                if (n.tls) yaml += `, tls: true, servername: ${n.servername}`;
-                if (n.flow) yaml += `, flow: ${n.flow}`;
-                if (n['reality-opts']) yaml += `, reality-opts: {public-key: ${n['reality-opts']['public-key']}, short-id: ${n['reality-opts']['short-id']}}`;
-                yaml += `, network: ${n.network}}\n`;
-            });
+            const finalUrl = `http://${vpsIp}:25500/sub?target=clash&url=${encodedUrls}&config=${encodeURIComponent(configUrl)}&emoji=true&list=false&udp=true&scv=true`;
 
-            if (res.enabled && res.host) {
-                yaml += `  - {name: "住宅IP", type: socks5, server: ${res.host}, port: ${res.port}, username: ${res.user}, password: ${res.pass}, dialer-proxy: "${res.dialer}"}\n`;
-            }
-
-            // Groups
-            yaml += `\nproxy-groups:\n  - name: 🚀 代理选择\n    type: select\n    proxies:\n`;
-            if (res.enabled) yaml += `      - 住宅IP\n`;
-            nodes.forEach(n => yaml += `      - "${n.name}"\n`);
-            yaml += `      - DIRECT\n\n`;
-
-            // Rule Providers
-            if (useProvider) {
-                yaml += `rule-providers:\n`;
-                yaml += `  wechat:\n    type: http\n    behavior: domain\n    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml"\n    path: ./rules/wechat.yaml\n    interval: 86400\n`;
-                yaml += `  ai:\n    type: http\n    behavior: domain\n    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml"\n    path: ./rules/ai.yaml\n    interval: 86400\n`;
-            }
-
-            // Rules
-            yaml += `\nrules:\n  - IP-CIDR,127.0.0.0/8,DIRECT\n  - IP-CIDR,192.168.0.0/16,DIRECT\n`;
-
-            const aiProxy = res.enabled ? "住宅IP" : "🚀 代理选择";
-
-            if (useProvider) {
-                yaml += `  - RULE-SET,ai,${aiProxy}\n`;
-                yaml += `  - RULE-SET,wechat,DIRECT\n`;
-            } else {
-                // Fallback hardcoded
-                yaml += `  - DOMAIN-SUFFIX,openai.com,${aiProxy}\n  - DOMAIN-SUFFIX,chatgpt.com,${aiProxy}\n  - DOMAIN-SUFFIX,claude.ai,${aiProxy}\n`;
-                yaml += `  - DOMAIN-SUFFIX,qpic.cn,DIRECT\n  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT\n`;
-            }
-
-            yaml += `  - DOMAIN-SUFFIX,cn,DIRECT\n  - MATCH,🚀 代理选择\n`;
-
-            finalYaml = yaml;
-            document.getElementById('output').innerText = yaml;
-            document.getElementById('platform-tag').innerText = isWin ? "Windows / Mihomo" : "Android / Meta";
+            document.getElementById('sub-url-text').innerText = finalUrl;
             document.getElementById('result').style.display = 'block';
-            document.getElementById('status-text').innerText = "生成成功！随时可以注入。";
 
-            setTimeout(() => {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }, 100);
+            copyToClipboard(finalUrl);
         }
 
-        function copyAll() {
-            navigator.clipboard.writeText(finalYaml);
-            alert("已复制到剪贴板！可以直接去 Clash 粘贴了。");
+        function copyLink() {
+            copyToClipboard(document.getElementById('sub-url-text').innerText);
+            alert("已复制到剪贴板！可以直接在 Clash 中订阅。");
         }
 
-        function downloadFile() {
-            const blob = new Blob([finalYaml], { type: 'text/yaml' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = document.getElementById('opt-win').checked ? "ultimate_win.yaml" : "ultimate_android.yaml";
-            a.click();
+        function copyToClipboard(txt) {
+            navigator.clipboard.writeText(txt);
+        }
+
+        function previewYaml() {
+            const pre = document.getElementById('yaml-preview');
+            pre.innerText = "正在请求 VPS 实时生成预览...\n(注意：如果 VPS 无法访问，预览将失败。建议直接导入 Clash 查看结果)";
+            pre.style.display = 'block';
+
+            const link = document.getElementById('sub-url-text').innerText;
+            fetch(link).then(r => r.text()).then(t => {
+                pre.innerText = t;
+            }).catch(e => {
+                pre.innerText = "预览失败。原因可能是 VPS 的 25500 端口未开放或跨域限制。\n\n但这不影响你在 Clash 软件里使用该链接。";
+            });
         }
     </script>
 </body>
 
-</html>< ! - -   T r i g g e r   B u i l d   - - >  
- 
+</html>
