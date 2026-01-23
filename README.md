@@ -104,12 +104,47 @@ Claude、ChatGPT 等 AI 服务会检测 IP 类型。
 - **机房 IP** → 经常导致 403 或封号。
 - **住宅 IP** → 模拟真实用户，极地封号风险（95% 以上防封成功率）。
 
-### 本地化“热插拔”设计
+### 本地化“热插拔”设计 (System Advantage)
 
-在我们的在线工具中：
-1. **完全热插拔**：你可以随时切换 IPRoyal、Oxylabs 或其他任何 Socks5 住宅代理。
-2. **隐私保护**：你的代理账号密码**仅保存在浏览器本地 (localStorage)**。即便你 Fork 了仓库并公开，别人也看不到你的 IP 信息。
-3. **傻瓜操作**：一旦在本地配置好，以后每次打开网页只需粘贴 VLESS 链接即可，“扔进去就出配置”。
+这是系统的核心优势：**下个月换 IPRoyal 账号时，不需要重启也不需要改配置文件。**
+
+1.  **完全热插拔**：直接在网页右侧“住宅 IP 模块”里直接把旧的账号密码删掉，填入新的。
+2.  **隐私保护**：你的代理账号密码**仅保存在浏览器本地 (localStorage)**。即便你 Fork 了仓库并公开，别人打开网页也看不到你的 IP 信息。
+3.  **瞬间生效**：点击“生成订阅”并在客户端更新后，AI 流量会立刻无缝切换到新的住宅 IP 通道。
+
+---
+
+## 💡 必知必会 (避坑指南)
+
+- **Q: 为什么生成的链接打不开？**
+  A: 99% 是因为你的 VPS 端口没开。请确保已执行 `install-subconverter.sh` 且脚本末尾显示“正常”。
+- **Q: 为什么生成的链接地址是 http://我的IP:25500/...？**
+  A: 因为这是直接请求你 VPS 上的转换引擎，不经过任何第三方，绝对保护你的节点隐私。
+- **Q: 网页里的信息刷新会丢吗？**
+  A: 不会。信息保存在你浏览器的 `localStorage` 里，除非你手动清除浏览器缓存。
+- **Q: AI 真的会自动走住宅 IP 吗？**
+  A: 是的。只要你开启了住宅 IP 模块并选择了落地节点，系统生成的规则会自动拦截 ChatGPT/Claude 等域名并导向该通道。
+- **Q: 忘记 3x-ui 密码怎么办？**
+  A: 在 VPS 终端输入 `x-ui` 命令，选 `7` 修改密码，选 `6` 修改端口。
+- **Q: 住宅 IP 到底怎么配置？**
+  A: 代理商发你的通常是 `ip:port:user:pass`，填到网页右侧的住宅代理模块即可。AI 流量会自动走这里。
+- **Q: 微信图片/视频加载不出来？**
+  A: 规则已包含完整微信 CDN 域名。如仍有问题，请确保使用最新版规则。
+- **Q: Google Play 下载卡住？**
+  A: 检查是否有 `googleapis.cn` 的代理规则（在 `.cn` 直连规则之前）。
+- **Q: 如何更新路由规则？**
+  A: 重新使用在线工具生成配置，或下载最新的 `base-rules.yaml`。
+
+
+### 方法二：命令行工具 (可选)
+
+```bash
+# 下载转换脚本 & 规则模板
+curl -O https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/clash-converter/convert.py
+
+# 转换链接
+python convert.py "vless://..." -o config.yaml
+```
 
 ---
 
@@ -125,56 +160,6 @@ Claude、ChatGPT 等 AI 服务会检测 IP 类型。
 | Google 服务 | YouTube/Play Store 等 | 30+ 域名 |
 
 规则持续更新，欢迎提 Issue 反馈！
-
----
-
-## 📁 项目结构
-
-```
-clash-for-anything/
-├── index.html                          # 🌐 在线配置生成器
-├── README.md                           # 📖 本文件
-├── vps-setup/
-│   └── setup.sh                        # 🖥️ VPS 一键部署脚本
-├── clash-converter/
-│   ├── convert.py                      # 🐍 Python 转换工具
-│   ├── convert.sh                      # 🐚 Shell 转换工具
-│   ├── subscription_server.py          # 📡 订阅服务器
-│   └── templates/
-│       └── base-rules.yaml             # 📋 完整路由规则模板
-└── configs/
-    ├── DMIT_Local.yaml                 # 💾 Windows 配置示例
-    └── DMIT_Android.yaml               # 💾 Android 配置示例
-```
-
----
-
-## ⚙️ 开启 GitHub Pages
-
-如果你 Fork 了本项目，需要手动开启 Pages：
-
-1. 进入仓库 Settings
-2. 左侧菜单选择 Pages
-3. Source 选择 "Deploy from a branch"
-4. Branch 选择 "main"，文件夹选择 "/ (root)"
-5. 点击 Save
-6. 等待几分钟，访问 `https://你的用户名.github.io/clash-for-anything/`
-
----
-
-## 🛠️ 常见问题
-
-### Q: 微信图片/视频加载不出来？
-
-规则已包含完整微信 CDN 域名。如仍有问题，请确保使用最新版规则。
-
-### Q: Google Play 下载卡住？
-
-检查是否有 `googleapis.cn` 的代理规则（在 `.cn` 直连规则之前）。
-
-### Q: 如何更新路由规则？
-
-重新使用在线工具生成配置，或下载最新的 `base-rules.yaml`。
 
 ---
 
