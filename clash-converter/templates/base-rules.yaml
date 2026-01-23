@@ -1,356 +1,47 @@
-# ============================================================
-# Clash 路由规则模板 - 市面最优版本
-# 项目地址: https://github.com/Kenny-BBDog/clash-for-anything
-# 最后更新: 2026-01-23
-# ============================================================
-# 规则顺序: 特殊规则 > 国内应用 > AI应用 > Google > 兜底
-# ============================================================
+# ======================================================
+# Clash 路由规则模板 (Rule Provider 增强版)
+# ======================================================
+
+rule-providers:
+  wechat:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml"
+    path: ./rules/wechat.yaml
+    interval: 86400
+
+  ai:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml"
+    path: ./rules/openai.yaml
+    interval: 86400
+
+  claude:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml"
+    path: ./rules/claude.yaml
+    interval: 86400
 
 rules:
-  # ======================================================
-  # ===== 私有网络直连（最高优先级）=====
-  # ======================================================
+  # 局域网直连
   - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
-  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
-  - IP-CIDR,224.0.0.0/4,DIRECT,no-resolve
-  - IP-CIDR6,fe80::/10,DIRECT,no-resolve
-  - DOMAIN-SUFFIX,local,DIRECT
-  - DOMAIN-SUFFIX,localhost,DIRECT
 
-  # ======================================================
-  # ===== 国内应用直连（完整列表）=====
-  # ======================================================
-  
-  # ----- 闲鱼 (Xianyu / Goofish) -----
-  - DOMAIN-SUFFIX,goofish.com,DIRECT
-  - DOMAIN-SUFFIX,2.taobao.com,DIRECT
-  - DOMAIN-KEYWORD,xianyu,DIRECT
-  - DOMAIN-KEYWORD,goofish,DIRECT
-  
-  # ----- 小红书 (Xiaohongshu / RED) -----
-  - DOMAIN-SUFFIX,xiaohongshu.com,DIRECT
-  - DOMAIN-SUFFIX,xhscdn.com,DIRECT
-  - DOMAIN-SUFFIX,xhslink.com,DIRECT
-  - DOMAIN-SUFFIX,xhs-cdn.com,DIRECT
-  - DOMAIN-KEYWORD,xiaohongshu,DIRECT
-  - DOMAIN-KEYWORD,redbook,DIRECT
-  
-  # ----- 抖音/字节跳动 (Douyin / ByteDance) -----
-  - DOMAIN-SUFFIX,douyin.com,DIRECT
-  - DOMAIN-SUFFIX,douyincdn.com,DIRECT
-  - DOMAIN-SUFFIX,douyinpic.com,DIRECT
-  - DOMAIN-SUFFIX,douyinstatic.com,DIRECT
-  - DOMAIN-SUFFIX,tiktokv.com,DIRECT
-  - DOMAIN-SUFFIX,bytedance.com,DIRECT
-  - DOMAIN-SUFFIX,byteimg.com,DIRECT
-  - DOMAIN-SUFFIX,bytegoofy.com,DIRECT
-  - DOMAIN-SUFFIX,bytecdn.cn,DIRECT
-  - DOMAIN-SUFFIX,pstatp.com,DIRECT
-  - DOMAIN-SUFFIX,snssdk.com,DIRECT
-  - DOMAIN-SUFFIX,toutiao.com,DIRECT
-  - DOMAIN-SUFFIX,toutiaoimg.com,DIRECT
-  - DOMAIN-SUFFIX,toutiaocdn.com,DIRECT
-  - DOMAIN-SUFFIX,ixigua.com,DIRECT
-  - DOMAIN-SUFFIX,huoshan.com,DIRECT
-  - DOMAIN-SUFFIX,zijieapi.com,DIRECT
-  - DOMAIN-KEYWORD,bytedance,DIRECT
-  - DOMAIN-KEYWORD,douyin,DIRECT
-  - DOMAIN-KEYWORD,toutiao,DIRECT
-  
-  # ----- 淘宝/阿里系 (Taobao / Alibaba) -----
-  - DOMAIN-SUFFIX,taobao.com,DIRECT
-  - DOMAIN-SUFFIX,tmall.com,DIRECT
-  - DOMAIN-SUFFIX,alicdn.com,DIRECT
-  - DOMAIN-SUFFIX,alipay.com,DIRECT
-  - DOMAIN-SUFFIX,aliyun.com,DIRECT
-  - DOMAIN-SUFFIX,aliyuncs.com,DIRECT
-  - DOMAIN-SUFFIX,alibaba.com,DIRECT
-  - DOMAIN-SUFFIX,alibabacloud.com,DIRECT
-  - DOMAIN-SUFFIX,dingtalk.com,DIRECT
-  - DOMAIN-SUFFIX,1688.com,DIRECT
-  - DOMAIN-SUFFIX,ele.me,DIRECT
-  - DOMAIN-SUFFIX,elemecdn.com,DIRECT
-  - DOMAIN-SUFFIX,amap.com,DIRECT
-  - DOMAIN-SUFFIX,cainiao.com,DIRECT
-  - DOMAIN-SUFFIX,mmstat.com,DIRECT
-  - DOMAIN-SUFFIX,tbcdn.cn,DIRECT
-  - DOMAIN-SUFFIX,taobaocdn.com,DIRECT
-  - DOMAIN-KEYWORD,taobao,DIRECT
-  - DOMAIN-KEYWORD,alibaba,DIRECT
-  - DOMAIN-KEYWORD,alipay,DIRECT
-  
-  # ----- 京东 (JD.com) -----
-  - DOMAIN-SUFFIX,jd.com,DIRECT
-  - DOMAIN-SUFFIX,jd.hk,DIRECT
-  - DOMAIN-SUFFIX,jdcloud.com,DIRECT
-  - DOMAIN-SUFFIX,jcloudcs.com,DIRECT
-  - DOMAIN-SUFFIX,jdcache.com,DIRECT
-  - DOMAIN-SUFFIX,360buyimg.com,DIRECT
-  - DOMAIN-SUFFIX,jdpay.com,DIRECT
-  - DOMAIN-KEYWORD,jingdong,DIRECT
-  - DOMAIN-KEYWORD,jd.com,DIRECT
-  
-  # ----- 拼多多 (Pinduoduo) -----
-  - DOMAIN-SUFFIX,pinduoduo.com,DIRECT
-  - DOMAIN-SUFFIX,yangkeduo.com,DIRECT
-  - DOMAIN-SUFFIX,pddpic.com,DIRECT
-  - DOMAIN-KEYWORD,pinduoduo,DIRECT
-  
-  # ----- 腾讯系 / 微信 (Tencent / WeChat) -----
-  - DOMAIN-SUFFIX,qq.com,DIRECT
-  - DOMAIN-SUFFIX,gtimg.com,DIRECT
-  - DOMAIN-SUFFIX,qpic.cn,DIRECT
-  - DOMAIN-SUFFIX,qlogo.cn,DIRECT
-  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT
-  - DOMAIN-SUFFIX,wechat.com,DIRECT
-  - DOMAIN-SUFFIX,weixinbridge.com,DIRECT
-  - DOMAIN-SUFFIX,tencent.com,DIRECT
-  - DOMAIN-SUFFIX,tencent.cn,DIRECT
-  - DOMAIN-SUFFIX,tencentyun.com,DIRECT
-  - DOMAIN-SUFFIX,myqcloud.com,DIRECT
-  - DOMAIN-SUFFIX,qcloud.com,DIRECT
-  - DOMAIN-SUFFIX,qcloudimg.com,DIRECT
-  - DOMAIN-SUFFIX,qcloudcdn.com,DIRECT
-  - DOMAIN-SUFFIX,tenpay.com,DIRECT
-  - DOMAIN-SUFFIX,idqqimg.com,DIRECT
-  - DOMAIN-SUFFIX,cdn-go.cn,DIRECT
-  # 微信图片/视频/语音专用 CDN
-  - DOMAIN-SUFFIX,wxs.qq.com,DIRECT
-  - DOMAIN-SUFFIX,wx.qq.com,DIRECT
-  - DOMAIN-SUFFIX,wx.qlogo.cn,DIRECT
-  - DOMAIN-SUFFIX,wxapp.tc.qq.com,DIRECT
-  - DOMAIN-SUFFIX,servicewechat.com,DIRECT
-  - DOMAIN-SUFFIX,weixin.com,DIRECT
-  - DOMAIN-SUFFIX,weixinsxy.com,DIRECT
-  - DOMAIN-SUFFIX,mmsns.qpic.cn,DIRECT
-  - DOMAIN-SUFFIX,mmbiz.qpic.cn,DIRECT
-  - DOMAIN-SUFFIX,mp.weixin.qq.com,DIRECT
-  # 微信语音视频通话服务器
-  - DOMAIN-SUFFIX,szextshort.weixin.qq.com,DIRECT
-  - DOMAIN-SUFFIX,szshort.weixin.qq.com,DIRECT
-  - DOMAIN-SUFFIX,szlong.weixin.qq.com,DIRECT
-  - DOMAIN-SUFFIX,sgshort.wechat.com,DIRECT
-  - DOMAIN-SUFFIX,sglong.wechat.com,DIRECT
-  - DOMAIN-SUFFIX,hkshort.wechat.com,DIRECT
-  - DOMAIN-SUFFIX,hklong.wechat.com,DIRECT
-  # 腾讯会议/企业微信
-  - DOMAIN-SUFFIX,meeting.tencent.com,DIRECT
-  - DOMAIN-SUFFIX,wework.com,DIRECT
-  - DOMAIN-SUFFIX,work.weixin.qq.com,DIRECT
-  - DOMAIN-KEYWORD,tencent,DIRECT
-  - DOMAIN-KEYWORD,weixin,DIRECT
-  - DOMAIN-KEYWORD,wechat,DIRECT
-  - DOMAIN-KEYWORD,qpic,DIRECT
-  - DOMAIN-KEYWORD,myqcloud,DIRECT
-  
-  # ----- 百度 (Baidu) -----
-  - DOMAIN-SUFFIX,baidu.com,DIRECT
-  - DOMAIN-SUFFIX,bdstatic.com,DIRECT
-  - DOMAIN-SUFFIX,bdimg.com,DIRECT
-  - DOMAIN-SUFFIX,baidubce.com,DIRECT
-  - DOMAIN-SUFFIX,bcebos.com,DIRECT
-  - DOMAIN-SUFFIX,baidustatic.com,DIRECT
-  - DOMAIN-SUFFIX,hao123.com,DIRECT
-  - DOMAIN-KEYWORD,baidu,DIRECT
-  
-  # ----- 哔哩哔哩 (Bilibili) -----
-  - DOMAIN-SUFFIX,bilibili.com,DIRECT
-  - DOMAIN-SUFFIX,bilivideo.com,DIRECT
-  - DOMAIN-SUFFIX,bilivideo.cn,DIRECT
-  - DOMAIN-SUFFIX,biliapi.net,DIRECT
-  - DOMAIN-SUFFIX,biliapi.com,DIRECT
-  - DOMAIN-SUFFIX,hdslb.com,DIRECT
-  - DOMAIN-SUFFIX,acg.tv,DIRECT
-  - DOMAIN-KEYWORD,bilibili,DIRECT
-  
-  # ----- 快手 (Kuaishou) -----
-  - DOMAIN-SUFFIX,kuaishou.com,DIRECT
-  - DOMAIN-SUFFIX,gifshow.com,DIRECT
-  - DOMAIN-SUFFIX,ksapisrv.com,DIRECT
-  - DOMAIN-SUFFIX,yxixy.com,DIRECT
-  - DOMAIN-KEYWORD,kuaishou,DIRECT
-  
-  # ----- 美团 (Meituan) -----
-  - DOMAIN-SUFFIX,meituan.com,DIRECT
-  - DOMAIN-SUFFIX,meituan.net,DIRECT
-  - DOMAIN-SUFFIX,dianping.com,DIRECT
-  - DOMAIN-SUFFIX,dpfile.com,DIRECT
-  - DOMAIN-KEYWORD,meituan,DIRECT
-  
-  # ----- 网易 (NetEase) -----
-  - DOMAIN-SUFFIX,163.com,DIRECT
-  - DOMAIN-SUFFIX,126.com,DIRECT
-  - DOMAIN-SUFFIX,netease.com,DIRECT
-  - DOMAIN-SUFFIX,netease.im,DIRECT
-  - DOMAIN-SUFFIX,ydstatic.com,DIRECT
-  - DOMAIN-SUFFIX,youdao.com,DIRECT
-  - DOMAIN-SUFFIX,music.126.net,DIRECT
-  - DOMAIN-KEYWORD,netease,DIRECT
-  
-  # ----- 微博 (Weibo) -----
-  - DOMAIN-SUFFIX,weibo.com,DIRECT
-  - DOMAIN-SUFFIX,weibo.cn,DIRECT
-  - DOMAIN-SUFFIX,sina.com,DIRECT
-  - DOMAIN-SUFFIX,sina.cn,DIRECT
-  - DOMAIN-SUFFIX,sinaimg.cn,DIRECT
-  - DOMAIN-SUFFIX,sinajs.cn,DIRECT
-  - DOMAIN-KEYWORD,weibo,DIRECT
-  
-  # ----- 知乎 (Zhihu) -----
-  - DOMAIN-SUFFIX,zhihu.com,DIRECT
-  - DOMAIN-SUFFIX,zhimg.com,DIRECT
-  - DOMAIN-SUFFIX,zhstatic.com,DIRECT
-  - DOMAIN-KEYWORD,zhihu,DIRECT
-  
-  # ----- 游戏平台 -----
-  - DOMAIN-SUFFIX,mihoyo.com,DIRECT
-  - DOMAIN-SUFFIX,hoyoverse.com,DIRECT
-  - DOMAIN-SUFFIX,yuanshen.com,DIRECT
-  - DOMAIN-SUFFIX,starrails.com,DIRECT
-  
-  # ----- 其他国内常用 -----
-  - DOMAIN-SUFFIX,csdn.net,DIRECT
-  - DOMAIN-SUFFIX,jianshu.com,DIRECT
-  - DOMAIN-SUFFIX,gitee.com,DIRECT
-  - DOMAIN-SUFFIX,oschina.net,DIRECT
-  - DOMAIN-SUFFIX,cnblogs.com,DIRECT
-  - DOMAIN-SUFFIX,ctrip.com,DIRECT
-  - DOMAIN-SUFFIX,12306.cn,DIRECT
-  - DOMAIN-SUFFIX,suning.com,DIRECT
-  
-  # ----- 国内域名后缀兜底 -----
-  - DOMAIN-SUFFIX,cn,DIRECT
-  - DOMAIN-SUFFIX,com.cn,DIRECT
-  - DOMAIN-SUFFIX,net.cn,DIRECT
-  - DOMAIN-SUFFIX,org.cn,DIRECT
-  - DOMAIN-SUFFIX,gov.cn,DIRECT
-  - DOMAIN-SUFFIX,edu.cn,DIRECT
+  # AI 应用 (强烈建议走住宅 IP)
+  - RULE-SET,ai,住宅IP
+  - RULE-SET,claude,住宅IP
 
-  # ======================================================
-  # ===== 特殊 .cn 域名（需要代理）=====
-  # ======================================================
-  # Google 中国域名（虽以 .cn 结尾，但被墙）
+  # 微信服务
+  - RULE-SET,wechat,DIRECT
+
+  # Google 中国服务
   - DOMAIN-SUFFIX,googleapis.cn,🚀 代理选择
   - DOMAIN-SUFFIX,google.cn,🚀 代理选择
-  - DOMAIN-SUFFIX,gstatic.cn,🚀 代理选择
-  - DOMAIN,services.googleapis.cn,🚀 代理选择
-  - DOMAIN,translate.googleapis.cn,🚀 代理选择
 
-  # ======================================================
-  # ===== AI 应用 - 强制走住宅 IP（防封号）=====
-  # ======================================================
-  # ⚠️ 重要: 以下规则强制走住宅 IP，不受手动选择影响
-  # 如无住宅 IP，请将 "住宅IP" 改为 "🚀 代理选择"
-  # ======================================================
-  
-  # ----- Claude / Anthropic（最高风险）-----
-  - DOMAIN-SUFFIX,anthropic.com,住宅IP
-  - DOMAIN-SUFFIX,claude.ai,住宅IP
-  - DOMAIN-SUFFIX,claudeusercontent.com,住宅IP
-  - DOMAIN,api.anthropic.com,住宅IP
-  - DOMAIN,statsig.anthropic.com,住宅IP
-  - DOMAIN-KEYWORD,anthropic,住宅IP
-  - DOMAIN-KEYWORD,claude,住宅IP
-  
-  # ----- OpenAI / ChatGPT（高风险）-----
-  - DOMAIN-SUFFIX,openai.com,住宅IP
-  - DOMAIN-SUFFIX,chatgpt.com,住宅IP
-  - DOMAIN-SUFFIX,oaiusercontent.com,住宅IP
-  - DOMAIN-SUFFIX,oaistatic.com,住宅IP
-  - DOMAIN-SUFFIX,sora.com,住宅IP
-  - DOMAIN,api.openai.com,住宅IP
-  - DOMAIN,platform.openai.com,住宅IP
-  - DOMAIN,auth0.openai.com,住宅IP
-  - DOMAIN-KEYWORD,openai,住宅IP
-  - DOMAIN-KEYWORD,chatgpt,住宅IP
-  
-  # ----- Antigravity -----
-  - DOMAIN-SUFFIX,antigravity.dev,住宅IP
-  - DOMAIN-SUFFIX,antigravity.ai,住宅IP
-  - DOMAIN-KEYWORD,antigravity,住宅IP
-  
-  # ----- Cursor AI -----
-  - DOMAIN-SUFFIX,cursor.sh,住宅IP
-  - DOMAIN-SUFFIX,cursor.com,住宅IP
-  - DOMAIN,api2.cursor.sh,住宅IP
-  - DOMAIN-KEYWORD,cursor,住宅IP
-  
-  # ----- GitHub Copilot -----
-  - DOMAIN,api.githubcopilot.com,住宅IP
-  - DOMAIN,copilot-proxy.githubusercontent.com,住宅IP
-  - DOMAIN-SUFFIX,copilot.github.com,住宅IP
-  
-  # ----- Google AI / Gemini -----
-  - DOMAIN-SUFFIX,gemini.google.com,住宅IP
-  - DOMAIN-SUFFIX,bard.google.com,住宅IP
-  - DOMAIN,generativelanguage.googleapis.com,住宅IP
-  - DOMAIN,ai.google.dev,住宅IP
-  - DOMAIN,aistudio.google.com,住宅IP
-  
-  # ----- 其他 AI 服务 -----
-  - DOMAIN-SUFFIX,perplexity.ai,住宅IP
-  - DOMAIN-SUFFIX,mistral.ai,住宅IP
-  - DOMAIN-SUFFIX,x.ai,住宅IP
-  - DOMAIN-SUFFIX,grok.x.ai,住宅IP
-  - DOMAIN-SUFFIX,groq.com,住宅IP
-  - DOMAIN-SUFFIX,together.ai,住宅IP
-  - DOMAIN-SUFFIX,replicate.com,住宅IP
-  - DOMAIN-SUFFIX,huggingface.co,住宅IP
-  - DOMAIN-SUFFIX,cohere.ai,住宅IP
-  
-  # ----- JetBrains AI -----
-  - DOMAIN-SUFFIX,jetbrains.ai,住宅IP
-  - DOMAIN,ai.jetbrains.com,住宅IP
-  
-  # ----- Sentry（Claude Code 必需）-----
-  - DOMAIN-SUFFIX,sentry.io,住宅IP
-
-  # ======================================================
-  # ===== Google Play Store 及服务 =====
-  # ======================================================
-  - DOMAIN-SUFFIX,play.google.com,🚀 代理选择
-  - DOMAIN-SUFFIX,play.googleapis.com,🚀 代理选择
-  - DOMAIN-SUFFIX,dl.google.com,🚀 代理选择
-  - DOMAIN-SUFFIX,googleapis.com,🚀 代理选择
-  - DOMAIN-SUFFIX,googleusercontent.com,🚀 代理选择
-  - DOMAIN-SUFFIX,ggpht.com,🚀 代理选择
-  - DOMAIN-SUFFIX,gstatic.com,🚀 代理选择
-  - DOMAIN-SUFFIX,google.com,🚀 代理选择
-  - DOMAIN-SUFFIX,googlevideo.com,🚀 代理选择
-  - DOMAIN-SUFFIX,youtube.com,🚀 代理选择
-  - DOMAIN-SUFFIX,ytimg.com,🚀 代理选择
-  - DOMAIN-SUFFIX,youtu.be,🚀 代理选择
-  - DOMAIN-KEYWORD,google,🚀 代理选择
-  - DOMAIN-KEYWORD,youtube,🚀 代理选择
-
-  # ======================================================
-  # ===== 其他常用国际服务 =====
-  # ======================================================
-  - DOMAIN-SUFFIX,github.com,🚀 代理选择
-  - DOMAIN-SUFFIX,githubusercontent.com,🚀 代理选择
-  - DOMAIN-SUFFIX,github.io,🚀 代理选择
-  - DOMAIN-SUFFIX,twitter.com,🚀 代理选择
-  - DOMAIN-SUFFIX,x.com,🚀 代理选择
-  - DOMAIN-SUFFIX,twimg.com,🚀 代理选择
-  - DOMAIN-SUFFIX,facebook.com,🚀 代理选择
-  - DOMAIN-SUFFIX,instagram.com,🚀 代理选择
-  - DOMAIN-SUFFIX,telegram.org,🚀 代理选择
-  - DOMAIN-SUFFIX,t.me,🚀 代理选择
-  - DOMAIN-SUFFIX,discord.com,🚀 代理选择
-  - DOMAIN-SUFFIX,discordapp.com,🚀 代理选择
-  - DOMAIN-SUFFIX,reddit.com,🚀 代理选择
-
-  # ======================================================
-  # ===== GeoIP/GeoSite 规则（如支持）=====
-  # ======================================================
-  # 注意: Android 版本可能不支持，请使用域名规则替代
-  # - GEOSITE,cn,DIRECT
-  # - GEOIP,cn,DIRECT,no-resolve
-
-  # ======================================================
-  # ===== 兜底规则 =====
-  # ======================================================
+  # 国内兜底
+  - DOMAIN-SUFFIX,cn,DIRECT
   - MATCH,🚀 代理选择
