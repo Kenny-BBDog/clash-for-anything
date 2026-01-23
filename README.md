@@ -17,9 +17,9 @@
 
 特点：
 - ✅ 粘贴 VLESS/VMess 链接，一键生成完整配置
-- ✅ 支持批量添加多个节点
+- ✅ **在线订阅转换**：生成私有链接，直接导入 Clash，永久自动同步
 - ✅ 住宅 IP 热插拔配置（防 AI 封号）
-- ✅ 自动包含最优路由规则
+- ✅ 自动包含最优路由规则（WeChat/AI/Google 分流）
 - ✅ 同时生成 Windows 和 Android 版本
 - ✅ 纯前端运行，不上传任何数据
 
@@ -36,7 +36,8 @@ bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything
 - ✅ 启用 BBR + TCP 深度优化
 - ✅ 安装 3x-ui 面板
 - ✅ 安装 NextTrace（路由测试）
-- ✅ 配置防火墙
+- ✅ **安装 Subconverter（私有订阅转换后端）**
+- ✅ 配置防火墙（自动开放 25500 端口）
 
 ---
 
@@ -52,10 +53,10 @@ bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything
 
 1. 打开 [在线配置生成器](https://kenny-bbdog.github.io/clash-for-anything/)
 2. 粘贴你的 VLESS/VMess 链接
-3. 点击"添加节点"
-4. （可选）配置住宅 IP 代理
-5. 点击"生成配置"
-6. 下载或复制配置文件
+3. （可选）配置住宅 IP 代理
+4. 输入你的 **VPS IP**（用于生成订阅链接）
+5. 点击 **“复制在线订阅链接”**
+6. 在 Clash 软件中新增订阅，粘贴链接即可！
 
 ### 方法二：命令行工具
 
@@ -155,6 +156,12 @@ clash-for-anything/
 ---
 
 ## 📝 更新日志
+
+### v1.2.0 (2026-01-23)
+- 🚀 **重大更新：支持私有订阅转换**
+- ✅ VPS 脚本集成 Subconverter 引擎
+- ✅ 网页端支持“一键生成订阅链接”，免去手动传文件的烦恼
+- ✅ 路由规则升级为动态云端模式
 
 ### v1.1.0 (2026-01-23)
 - 🎉 新增在线配置生成器（纯前端）
