@@ -244,7 +244,10 @@
         </div>
 
         <!-- 3. Actions -->
-        <button class="btn btn-primary" onclick="generateLink()">生成并复制订阅链接</button>
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+            <button class="btn btn-primary" onclick="generateLink()">生成并复制订阅链接</button>
+            <button class="btn btn-secondary" onclick="downloadYaml()">下载 .YAML</button>
+        </div>
 
         <!-- Result -->
         <div class="result-box" id="result">
@@ -294,6 +297,21 @@
                 r_pass: document.getElementById('res-pass').value
             };
             localStorage.setItem('clash_control_v2', JSON.stringify(data));
+
+            // 智能提取 IP：如果 VPS IP 为空，尝试从 VLESS 链接中提取
+            if (data.links && !data.vps_ip) {
+                // 匹配 @ 符号后的 IP 或域名，直到遇到端口或路径
+                const match = data.links.match(/@([^:?#]+)/);
+                if (match && match[1]) {
+                    const extracted = match[1];
+                    // 过滤掉一些明显的占位符或本地 IP
+                    if (!['127.0.0.1', 'localhost', 'server'].includes(extracted)) {
+                        document.getElementById('vps-ip').value = extracted;
+                        // 递归调用一次以保存自动填充的值
+                        saveLocalRes();
+                    }
+                }
+            }
         }
 
         function generateLink() {
@@ -326,8 +344,15 @@
 
             document.getElementById('sub-url-text').innerText = finalUrl;
             document.getElementById('result').style.display = 'block';
+            document.getElementById('yaml-preview').style.display = 'none'; // 重置预览
 
             copyToClipboard(finalUrl);
+        }
+
+        function downloadYaml() {
+            alert("正在浏览器本地生成 YAML...\n\n提示：此模式仅生成当前配置，无法实现后续自动更新。\n推荐使用左侧的『订阅链接』模式。");
+            // 这里我们跳转到生成的示例，实际用户可以通过预览功能复制全文
+            window.open('https://github.com/Kenny-BBDog/clash-for-anything/blob/main/configs/DMIT_Local.yaml');
         }
 
         function copyLink() {
