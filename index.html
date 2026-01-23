@@ -620,7 +620,12 @@
                 `  - DOMAIN-SUFFIX,claude.ai,${aiProxy}\n` +
                 `  - DOMAIN-SUFFIX,openai.com,${aiProxy}\n` +
                 `  - DOMAIN-SUFFIX,chatgpt.com,${aiProxy}\n` +
+                `  - DOMAIN-SUFFIX,oaistatic.com,${aiProxy}\n` +
+                `  - DOMAIN-SUFFIX,oaiusercontent.com,${aiProxy}\n` +
                 `  - DOMAIN-SUFFIX,cursor.com,${aiProxy}\n` +
+                `  - DOMAIN-SUFFIX,cursor.sh,${aiProxy}\n` +
+                `  - DOMAIN-SUFFIX,gemini.google.com,${aiProxy}\n` +
+                `  - DOMAIN-SUFFIX,grok.com,${aiProxy}\n` +
                 `  - DOMAIN-SUFFIX,antigravity.ai,${aiProxy}\n`;
 
             // 微信 CDN 优化
@@ -628,7 +633,10 @@
                 "  - DOMAIN-SUFFIX,qpic.cn,DIRECT\n" +
                 "  - DOMAIN-SUFFIX,qlogo.cn,DIRECT\n" +
                 "  - DOMAIN-SUFFIX,gtimg.com,DIRECT\n" +
-                "  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT\n";
+                "  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT\n" +
+                "  - DOMAIN-SUFFIX,wechat.com,DIRECT\n" +
+                "  - DOMAIN-SUFFIX,wechatpay.cn,DIRECT\n" +
+                "  - DOMAIN-SUFFIX,wxs.qq.com,DIRECT\n";
 
             // 国内兜底
             yaml += "  - DOMAIN-SUFFIX,cn,DIRECT\n" +
