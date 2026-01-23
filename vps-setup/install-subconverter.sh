@@ -67,6 +67,22 @@ elif command -v firewall-cmd &> /dev/null; then
     firewall-cmd --reload > /dev/null 2>&1
 fi
 
-print_success "Subconverter 安装成功！"
-print_info "服务端口: 25500"
-print_info "现在你可以在在线工具中使用此服务器 IP 生成订阅链接了。"
+# 连通性自测
+local PUBLIC_IP=$(curl -s4 ip.sb 2>/dev/null || curl -s4 ifconfig.me 2>/dev/null)
+print_info "正在进行 Subconverter 服务自检..."
+sleep 2
+local TEST_SC=$(curl -s --connect-timeout 2 http://localhost:25500/version > /dev/null && echo -e "${GREEN}正常${NC}" || echo -e "${RED}启动失败/端口被占用${NC}")
+
+echo ""
+echo -e "${CYAN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+echo -e "${CYAN}┃                🔋 订阅中心 (Subconverter) 部署完成           ┃${NC}"
+echo -e "${CYAN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+echo -e "${CYAN}┃${NC}  🌐 【服务端信息】"
+echo -e "${CYAN}┃${NC}  - 转换中心地址: ${YELLOW}http://${PUBLIC_IP}:25500${NC}"
+echo -e "${CYAN}┃${NC}  - 服务状态:     $TEST_SC"
+echo -e "${CYAN}┃${NC}"
+echo -e "${CYAN}┃${NC}  📝 【使用指南】"
+echo -e "${CYAN}┃${NC}  1. 请在您的 [配置生成器] 网页中输入上述 IP"
+echo -e "${CYAN}┃${NC}  2. 若服务状态显示异常，请通过 'systemctl status subconverter' 检查"
+echo -e "${CYAN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+echo ""

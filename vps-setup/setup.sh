@@ -221,53 +221,42 @@ configure_firewall() {
 
 # 显示安装报告
 show_report() {
-    echo ""
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║                    安装完成报告                            ║${NC}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
-    echo ""
+    local PUBLIC_IP=$(curl -s4 ip.sb 2>/dev/null || curl -s4 ifconfig.me 2>/dev/null)
+    local BBR_STATUS=$(sysctl net.ipv4.tcp_congestion_control 2>/dev/null | grep -q bbr && echo -e "${GREEN}已开启 (极致调优版)${NC}" || echo -e "${RED}未开启${NC}")
+    local SWAP_STATUS=$(free -h | awk '/^Swap:/{print $2}')
     
-    # 系统信息
-    echo -e "${YELLOW}【系统信息】${NC}"
-    echo "  操作系统: $OS $VERSION"
-    echo "  内核版本: $(uname -r)"
-    echo "  CPU: $(grep -c processor /proc/cpuinfo) 核"
-    echo "  内存: $(free -h | awk '/^Mem:/{print $2}')"
-    echo "  SWAP: $(free -h | awk '/^Swap:/{print $2}')"
-    echo ""
-    
-    # BBR 状态
-    echo -e "${YELLOW}【网络优化】${NC}"
-    if sysctl net.ipv4.tcp_congestion_control 2>/dev/null | grep -q bbr; then
-        echo -e "  BBR: ${GREEN}已启用${NC}"
-    else
-        echo -e "  BBR: ${RED}未启用${NC}"
+    # 提取 3x-ui 账号
+    local XUI_PORT="2053"
+    if [ -f "/etc/x-ui/x-ui.db" ]; then
+        # 尝试从数据库提取端口（如果工具允许）
+        XUI_PORT=$(sqlite3 /etc/x-ui/x-ui.db "SELECT value FROM settings WHERE key='webPort';" 2>/dev/null || echo "2053")
     fi
+    local XUI_URL="http://${PUBLIC_IP}:${XUI_PORT}"
+
+    # 连通性自测
+    print_info "正在进行系统自检与连通性测试..."
+    local TEST_XUI=$(curl -s --connect-timeout 2 $XUI_URL > /dev/null && echo -e "${GREEN}正常${NC}" || echo -e "${YELLOW}待验证 (可能需刷新防火墙)${NC}")
+    
+    echo ""
+    echo -e "${CYAN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+    echo -e "${CYAN}┃                 🎉 部署完成！请保存以下信息                 ┃${NC}"
+    echo -e "${CYAN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+    echo -e "${CYAN}┃${NC}  🚀 【基础优化】"
+    echo -e "${CYAN}┃${NC}  - BBR 状态:  $BBR_STATUS"
+    echo -e "${CYAN}┃${NC}  - SWAP 大小: $SWAP_STATUS"
+    echo -e "${CYAN}┃${NC}"
+    echo -e "${CYAN}┃${NC}  📊 【管理后台 (3x-ui)】"
+    echo -e "${CYAN}┃${NC}  - 访问地址:  ${YELLOW}${XUI_URL}${NC}"
+    echo -e "${CYAN}┃${NC}  - 默认内容:  用户: ${YELLOW}admin${NC} / 密码: ${YELLOW}admin${NC}"
+    echo -e "${CYAN}┃${NC}  - 运行状态:  $TEST_XUI"
+    echo -e "${CYAN}┃${NC}"
+    echo -e "${CYAN}┃${NC}  🔧 【常用命令】"
+    echo -e "${CYAN}┃${NC}  - 管理面板:  x-ui (输入该命令可修改端口/重置密码)"
+    echo -e "${CYAN}┃${NC}  - 路由测试:  nexttrace 8.8.8.8"
+    echo -e "${CYAN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
     echo ""
     
-    # 服务状态
-    echo -e "${YELLOW}【服务状态】${NC}"
-    if systemctl is-active --quiet x-ui 2>/dev/null; then
-        X_UI_PORT=$(grep -oP '"port":\s*\K\d+' /usr/local/x-ui/db/x-ui.db 2>/dev/null || echo "2053")
-        echo -e "  3x-ui: ${GREEN}运行中${NC} (端口: $X_UI_PORT)"
-    else
-        echo -e "  3x-ui: ${RED}未运行${NC}"
-    fi
-    echo ""
-    
-    # IP 信息
-    echo -e "${YELLOW}【网络信息】${NC}"
-    PUBLIC_IP=$(curl -s4 ip.sb 2>/dev/null || curl -s4 ifconfig.me 2>/dev/null)
-    echo "  公网 IP: $PUBLIC_IP"
-    echo ""
-    
-    # 使用提示
-    echo -e "${YELLOW}【下一步】${NC}"
-    echo "  1. 访问 3x-ui 面板: http://$PUBLIC_IP:2053"
-    echo "  2. 默认用户名密码: admin / admin (请立即修改!)"
-    echo "  3. 创建入站后，使用以下命令生成 Clash 配置:"
-    echo ""
-    echo -e "     ${GREEN}bash <(curl -Ls https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/clash-converter/convert.sh) \"vless://...\"${NC}"
+    print_warning "重要：请立即访问面板修改默认账号密码！"
     echo ""
 }
 
