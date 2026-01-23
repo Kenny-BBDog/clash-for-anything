@@ -192,27 +192,53 @@ install_nexttrace() {
     fi
 }
 
-# 安装 3x-ui 面板
-install_3xui() {
-    print_info "安装 3x-ui 面板..."
+# 安装私有订阅转换引擎 (Subconverter)
+install_subconverter() {
+    print_info "正在安装私有订阅转换引擎 (Subconverter)..."
     
-    # 检查是否已安装
-    if systemctl is-active --quiet x-ui 2>/dev/null; then
-        print_success "3x-ui 已安装并运行中"
+    if [ -d "/usr/local/subconverter" ]; then
+        print_success "Subconverter 已安装"
         return
     fi
+
+    # 获取最新版本并下载 (针对 x86_64)
+    local ARCH="linux64"
+    if [[ "$(uname -m)" == "aarch64" ]]; then ARCH="aarch64"; fi
     
-    bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+    wget -qO /tmp/subconverter.tar.gz https://github.com/tindy2013/subconverter/releases/latest/download/subconverter_${ARCH}.tar.gz
+    tar -xzf /tmp/subconverter.tar.gz -C /usr/local/
+    rm /tmp/subconverter.tar.gz
+
+    # 创建服务
+    cat > /etc/systemd/system/subconverter.service << EOF
+[Unit]
+Description=Subconverter Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/local/subconverter
+ExecStart=/usr/local/subconverter/subconverter
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
+    systemctl enable subconverter
+    systemctl start subconverter
     
-    print_success "3x-ui 安装完成"
+    print_success "Subconverter 私有转换引擎安装成功 (端口: 25500)"
 }
 
 # 配置防火墙
 configure_firewall() {
     print_info "配置防火墙..."
     
-    # 常用端口
-    PORTS="22 80 443 2053 2083 2087 2096 8443 666"
+    # 常用端口 + Subconverter 端口
+    PORTS="22 80 443 2053 2083 2087 2096 8443 666 25500"
     
     if command -v ufw &> /dev/null; then
         ufw --force enable
@@ -302,6 +328,7 @@ main() {
     install_nexttrace
     configure_firewall
     install_3xui
+    install_subconverter
     
     show_report
 }

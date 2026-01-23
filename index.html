@@ -453,12 +453,23 @@
                             <option value="">-- 等待解析节点 --</option>
                         </select>
                     </div>
+
+                    <div style="border-top: 1px solid var(--border); margin: 30px 0; padding-top: 20px;">
+                        <h2 style="font-size: 1.2rem; margin-bottom: 20px;">🛡️ 私有订阅链接 (推荐)</h2>
+                        <label>你的 VPS 公网 IP</label>
+                        <input type="text" id="vps-ip" placeholder="例如: 1.2.3.4" oninput="saveLocalRes()">
+                        <p style="font-size: 0.75rem; color: var(--text-mute); margin-top: 10px;">输入 IP 后，点击下方按钮生成可以直接导入
+                            Clash 的 URL。</p>
+                        <button class="btn btn-primary" onclick="generateSubLink()"
+                            style="margin-top: 15px; width: 100%; background: var(--surface); border: 1px solid var(--primary); color: var(--primary);">📋
+                            复制在线订阅链接</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Result -->
-        <div class="result-zone" id="result">
+        <div class="result-zone" id="result" style="display: none; margin-top: 50px;">
             <div class="code-wrap">
                 <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                     <h2 style="margin:0;">成品配置文件</h2>
@@ -494,6 +505,7 @@
                 document.getElementById('res-port').value = data.port || '';
                 document.getElementById('res-user').value = data.user || '';
                 document.getElementById('res-pass').value = data.pass || '';
+                document.getElementById('vps-ip').value = data.vpsIp || '';
                 if (data.enabled) toggleRes(document.getElementById('res-toggle'));
             }
         };
@@ -518,9 +530,25 @@
                 port: document.getElementById('res-port').value,
                 user: document.getElementById('res-user').value,
                 pass: document.getElementById('res-pass').value,
-                dialer: document.getElementById('res-dialer').value
+                dialer: document.getElementById('res-dialer').value,
+                vpsIp: document.getElementById('vps-ip').value
             };
             localStorage.setItem('ultra_res', JSON.stringify(data));
+        }
+
+        function generateSubLink() {
+            const links = document.getElementById('links').value.trim();
+            const vpsIp = document.getElementById('vps-ip').value.trim();
+
+            if (!links) { alert("请先粘贴节点链接！"); return; }
+            if (!vpsIp) { alert("请输入你的 VPS IP 用于生成链接！"); return; }
+
+            // 使用 Base64 编码节点链接，防止特殊字符干扰 URL
+            const encodedLinks = btoa(links).replace(/\//g, '_').replace(/\+/g, '-');
+            const subUrl = `http://${vpsIp}:25500/sub?target=clash&url=${links.split('\n').map(l => encodeURIComponent(l.trim())).join('%7C')}&config=https://raw.githubusercontent.com/Kenny-BBDog/clash-for-anything/main/clash-converter/templates/base-rules.yaml&emoji=true&list=false&udp=true`;
+
+            navigator.clipboard.writeText(subUrl);
+            alert("✅ 订阅链接已复制！\n\n你可以把这个链接直接粘贴到 Clash Verge 或 Clash for Android 的订阅地址栏中。\n\n只要你的 VPS 开启了，这个链接就永远有效且自动更新。");
         }
 
         function parseBatch() {
