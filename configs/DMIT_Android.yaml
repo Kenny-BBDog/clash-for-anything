@@ -400,75 +400,75 @@ rules:
   - DOMAIN-SUFFIX,edu.cn,DIRECT
   
   # ======================================================
-  # ===== AI 应用 - 强制走住宅 IP（防封号）=====
+  # ===== AI 应用 - 走代理选择（需要住宅IP时手动切换）=====
   # ======================================================
-  # ⚠️ 重要说明：
-  # - Claude/OpenAI 检测机房 IP 是封号主因（约 45% 封号案例）
-  # - 使用住宅 IP 绕过检测成功率 95-99%
-  # - 以下规则强制走住宅 IP，不受手动选择影响
+  # ⚠️ 逻辑变更说明：
+  # - AI 应用现在走 🚀 代理选择，不再强制走住宅IP
+  # - 如需使用住宅IP，请手动将代理选择切换到"住宅IP"
+  # - 这样可以避免住宅IP失效时影响所有AI访问
   # ======================================================
   
-  # ----- Claude / Anthropic（最高风险）-----
-  - DOMAIN-SUFFIX,anthropic.com,住宅IP
-  - DOMAIN-SUFFIX,claude.ai,住宅IP
-  - DOMAIN-SUFFIX,claudeusercontent.com,住宅IP
-  - DOMAIN,api.anthropic.com,住宅IP
-  - DOMAIN,statsig.anthropic.com,住宅IP
-  - DOMAIN-KEYWORD,anthropic,住宅IP
-  - DOMAIN-KEYWORD,claude,住宅IP
+  # ----- Claude / Anthropic -----
+  - DOMAIN-SUFFIX,anthropic.com,🚀 代理选择
+  - DOMAIN-SUFFIX,claude.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,claudeusercontent.com,🚀 代理选择
+  - DOMAIN,api.anthropic.com,🚀 代理选择
+  - DOMAIN,statsig.anthropic.com,🚀 代理选择
+  - DOMAIN-KEYWORD,anthropic,🚀 代理选择
+  - DOMAIN-KEYWORD,claude,🚀 代理选择
   
-  # ----- OpenAI / ChatGPT（高风险）-----
-  - DOMAIN-SUFFIX,openai.com,住宅IP
-  - DOMAIN-SUFFIX,chatgpt.com,住宅IP
-  - DOMAIN-SUFFIX,oaiusercontent.com,住宅IP
-  - DOMAIN-SUFFIX,oaistatic.com,住宅IP
-  - DOMAIN-SUFFIX,openaiapi-site.azureedge.net,住宅IP
-  - DOMAIN,api.openai.com,住宅IP
-  - DOMAIN,platform.openai.com,住宅IP
-  - DOMAIN,auth0.openai.com,住宅IP
-  - DOMAIN-KEYWORD,openai,住宅IP
-  - DOMAIN-KEYWORD,chatgpt,住宅IP
+  # ----- OpenAI / ChatGPT -----
+  - DOMAIN-SUFFIX,openai.com,🚀 代理选择
+  - DOMAIN-SUFFIX,chatgpt.com,🚀 代理选择
+  - DOMAIN-SUFFIX,oaiusercontent.com,🚀 代理选择
+  - DOMAIN-SUFFIX,oaistatic.com,🚀 代理选择
+  - DOMAIN-SUFFIX,openaiapi-site.azureedge.net,🚀 代理选择
+  - DOMAIN,api.openai.com,🚀 代理选择
+  - DOMAIN,platform.openai.com,🚀 代理选择
+  - DOMAIN,auth0.openai.com,🚀 代理选择
+  - DOMAIN-KEYWORD,openai,🚀 代理选择
+  - DOMAIN-KEYWORD,chatgpt,🚀 代理选择
   
-  # ----- Antigravity（需要住宅 IP）-----
-  - DOMAIN-SUFFIX,antigravity.dev,住宅IP
-  - DOMAIN-SUFFIX,antigravity.ai,住宅IP
-  - DOMAIN-KEYWORD,antigravity,住宅IP
+  # ----- Antigravity -----
+  - DOMAIN-SUFFIX,antigravity.dev,🚀 代理选择
+  - DOMAIN-SUFFIX,antigravity.ai,🚀 代理选择
+  - DOMAIN-KEYWORD,antigravity,🚀 代理选择
   
-  # ----- Cursor AI（使用 Claude/OpenAI 后端）-----
-  - DOMAIN-SUFFIX,cursor.sh,住宅IP
-  - DOMAIN-SUFFIX,cursor.com,住宅IP
-  - DOMAIN,api2.cursor.sh,住宅IP
-  - DOMAIN-KEYWORD,cursor,住宅IP
+  # ----- Cursor AI -----
+  - DOMAIN-SUFFIX,cursor.sh,🚀 代理选择
+  - DOMAIN-SUFFIX,cursor.com,🚀 代理选择
+  - DOMAIN,api2.cursor.sh,🚀 代理选择
+  - DOMAIN-KEYWORD,cursor,🚀 代理选择
   
-  # ----- GitHub Copilot（连接 OpenAI）-----
-  - DOMAIN,api.githubcopilot.com,住宅IP
-  - DOMAIN,copilot-proxy.githubusercontent.com,住宅IP
-  - DOMAIN-SUFFIX,copilot.github.com,住宅IP
+  # ----- GitHub Copilot -----
+  - DOMAIN,api.githubcopilot.com,🚀 代理选择
+  - DOMAIN,copilot-proxy.githubusercontent.com,🚀 代理选择
+  - DOMAIN-SUFFIX,copilot.github.com,🚀 代理选择
   
   # ----- Google AI / Gemini -----
-  - DOMAIN-SUFFIX,gemini.google.com,住宅IP
-  - DOMAIN-SUFFIX,bard.google.com,住宅IP
-  - DOMAIN,generativelanguage.googleapis.com,住宅IP
-  - DOMAIN,ai.google.dev,住宅IP
-  - DOMAIN,aistudio.google.com,住宅IP
+  - DOMAIN-SUFFIX,gemini.google.com,🚀 代理选择
+  - DOMAIN-SUFFIX,bard.google.com,🚀 代理选择
+  - DOMAIN,generativelanguage.googleapis.com,🚀 代理选择
+  - DOMAIN,ai.google.dev,🚀 代理选择
+  - DOMAIN,aistudio.google.com,🚀 代理选择
   
   # ----- 其他 AI 服务 -----
-  - DOMAIN-SUFFIX,perplexity.ai,住宅IP
-  - DOMAIN-SUFFIX,mistral.ai,住宅IP
-  - DOMAIN-SUFFIX,x.ai,住宅IP
-  - DOMAIN-SUFFIX,grok.x.ai,住宅IP
-  - DOMAIN-SUFFIX,groq.com,住宅IP
-  - DOMAIN-SUFFIX,together.ai,住宅IP
-  - DOMAIN-SUFFIX,replicate.com,住宅IP
-  - DOMAIN-SUFFIX,huggingface.co,住宅IP
-  - DOMAIN-SUFFIX,cohere.ai,住宅IP
+  - DOMAIN-SUFFIX,perplexity.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,mistral.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,x.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,grok.x.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,groq.com,🚀 代理选择
+  - DOMAIN-SUFFIX,together.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,replicate.com,🚀 代理选择
+  - DOMAIN-SUFFIX,huggingface.co,🚀 代理选择
+  - DOMAIN-SUFFIX,cohere.ai,🚀 代理选择
   
   # ----- JetBrains AI -----
-  - DOMAIN-SUFFIX,jetbrains.ai,住宅IP
-  - DOMAIN,ai.jetbrains.com,住宅IP
+  - DOMAIN-SUFFIX,jetbrains.ai,🚀 代理选择
+  - DOMAIN,ai.jetbrains.com,🚀 代理选择
   
-  # ----- Sentry（错误上报，Claude Code 必需）-----
-  - DOMAIN-SUFFIX,sentry.io,住宅IP
+  # ----- Sentry（错误上报）-----
+  - DOMAIN-SUFFIX,sentry.io,🚀 代理选择
   
 
   # ======================================================
