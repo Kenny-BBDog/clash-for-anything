@@ -134,6 +134,10 @@ Claude、ChatGPT 等 AI 服务会检测 IP 类型。
   A: 检查是否有 `googleapis.cn` 的代理规则（在 `.cn` 直连规则之前）。
 - **Q: 如何更新路由规则？**
   A: 重新使用在线工具生成配置，或下载最新的 `base-rules.yaml`。
+- **Q: 开启 TUN 模式后部分网站打不开 (ERR_CONNECTION_CLOSED)？**
+  A: 检查配置中的 `tun.mtu` 是否设置过大。**必须设置为 1500**，不要改成 9000 或其他巨型帧值，否则数据包会在代理过程中被丢弃。同时建议将 `strict-route` 设为 `false`。
+- **Q: TUN 模式下某些网站自动断开连接？**
+  A: 确保 DNS 增强模式为 `fake-ip`（不要用 `redir-host`）。如果问题依然存在，尝试临时关闭 Sniffer 域名嗅探功能。
 
 
 ### 方法二：命令行工具 (可选)

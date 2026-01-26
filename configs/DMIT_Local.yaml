@@ -38,6 +38,7 @@ sniffer:
     - "+.push.apple.com"
 
 # ===== TUN 模式配置 =====
+# ⚠️ 注意：MTU 不要设置为 9000，会导致连接中断！
 tun:
   enable: true
   stack: mixed
@@ -45,8 +46,8 @@ tun:
     - "any:53"
   auto-route: true
   auto-detect-interface: true
-  strict-route: true
-  mtu: 9000
+  strict-route: false  # 设为 true 可能与 Windows TUN 驱动冲突
+  mtu: 1500            # 标准以太网 MTU，不要改大！
 
 # ===== DNS 配置 - 国内外分流 =====
 dns:
