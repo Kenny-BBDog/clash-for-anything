@@ -1,47 +1,178 @@
 # ======================================================
-# Clash 路由规则模板 (Rule Provider 增强版)
+# Clash 完整配置模板 (Sub Hub v2 - Optimized)
 # ======================================================
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+allow-lan: true
+bind-address: '*'
+mode: rule
+log-level: warning
+ipv6: false
+external-controller: 127.0.0.1:9090
+unified-delay: true
+tcp-concurrent: true
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
 
-rule-providers:
-  wechat:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml"
-    path: ./rules/wechat.yaml
-    interval: 86400
+# ===== 性能优化参数 =====
+keep-alive-interval: 30
+find-process-mode: strict
+global-client-fingerprint: chrome
 
-  ai:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml"
-    path: ./rules/openai.yaml
-    interval: 86400
+# ===== Sniffer 域名嗅探 =====
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
 
-  claude:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml"
-    path: ./rules/claude.yaml
-    interval: 86400
+# ===== TUN 模式配置 =====
+tun:
+  enable: true
+  stack: mixed
+  dns-hijack:
+    - "any:53"
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: false
+  mtu: 1500
 
+# ===== DNS 配置 - 国内外分流 =====
+dns:
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.localhost"
+    - "*.localdomain"
+    - "time.*.com"
+    - "time.*.gov"
+    - "time.*.edu.cn"
+    - "time.*.apple.com"
+    - "time?.*.com"
+    - "ntp.*.com"
+    - "*.ntp.org.cn"
+    - "+.pool.ntp.org"
+    - "localhost.ptlogin2.qq.com"
+    - "localhost.sec.qq.com"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+  default-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.quad9.net/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+    ipcidr:
+      - 240.0.0.0/4
+      - 127.0.0.1/32
+
+hosts:
+  'dashboard.subhub': 64.186.234.15
+
+# 代理节点由 Sub Hub 自动注入
+proxies: []
+
+# 代理分组
+proxy-groups:
+  - name: 🚀 代理选择
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      - 住宅IP
+      - DIRECT
+
+  - name: ♻️ 自动选择
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    proxies: []
+
+  - name: 住宅IP
+    type: select
+    proxies:
+      - 🚀 代理选择
+      - DIRECT
+
+# 路由规则
 rules:
-  # 局域网直连
+  # Sub Hub Dashboard 直接连接
+  - DOMAIN,dashboard.subhub,DIRECT
+  - DOMAIN-SUFFIX,subhub,DIRECT
+  - IP-CIDR,64.186.234.15/32,DIRECT,no-resolve
+
+  # ===== 私有网络直连 =====
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-SUFFIX,localhost,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
 
-  # AI 应用 (强烈建议走住宅 IP)
-  - RULE-SET,ai,住宅IP
-  - RULE-SET,claude,住宅IP
+  # ===== AI 服务 =====
+  - DOMAIN-SUFFIX,anthropic.com,🚀 代理选择
+  - DOMAIN-SUFFIX,claude.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,openai.com,🚀 代理选择
+  - DOMAIN-SUFFIX,chatgpt.com,🚀 代理选择
+  - DOMAIN-SUFFIX,perplexity.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,gemini.google.com,🚀 代理选择
 
-  # 微信服务
-  - RULE-SET,wechat,DIRECT
+  # ===== 国内常用应用直连 (参考 DMIT_Local) =====
+  # 腾讯 / 微信
+  - DOMAIN-SUFFIX,qq.com,DIRECT
+  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT
+  - DOMAIN-SUFFIX,wechat.com,DIRECT
+  - DOMAIN-SUFFIX,myqcloud.com,DIRECT
+  - DOMAIN-KEYWORD,weixin,DIRECT
+  
+  # 阿里 / 淘宝
+  - DOMAIN-SUFFIX,taobao.com,DIRECT
+  - DOMAIN-SUFFIX,tmall.com,DIRECT
+  - DOMAIN-SUFFIX,alicdn.com,DIRECT
+  - DOMAIN-SUFFIX,alipay.com,DIRECT
+  - DOMAIN-SUFFIX,aliyun.com,DIRECT
+  
+  # 字节 / B站
+  - DOMAIN-SUFFIX,douyin.com,DIRECT
+  - DOMAIN-SUFFIX,bilibili.com,DIRECT
+  - DOMAIN-SUFFIX,bilivideo.com,DIRECT
+  
+  # 百度 / 京东
+  - DOMAIN-SUFFIX,baidu.com,DIRECT
+  - DOMAIN-SUFFIX,jd.com,DIRECT
 
-  # Google 中国服务
-  - DOMAIN-SUFFIX,googleapis.cn,🚀 代理选择
-  - DOMAIN-SUFFIX,google.cn,🚀 代理选择
-
-  # 国内兜底
-  - DOMAIN-SUFFIX,cn,DIRECT
+  # ===== 其他规则 =====
+  - GEOSITE,google,🚀 代理选择
+  - GEOSITE,gplay,🚀 代理选择
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT,no-resolve
   - MATCH,🚀 代理选择
+
