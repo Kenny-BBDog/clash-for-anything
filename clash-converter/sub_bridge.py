@@ -600,55 +600,67 @@ class SubBridgeHandler(BaseHTTPRequestHandler):
             # Injected Managed Proxies
             config_yaml['proxies'] = nodes
             
-            # Handle External Proxy Chain (e.g., Static Residential IP)
-            external_proxy_name = None
-            if current_sub and current_sub.get('external_proxy'):
-                ext = current_sub['external_proxy']
-                if ext.get('server') and ext.get('port'):
-                    external_proxy_name = f"🇺🇸 运营专线 (美国静态)"
-                    
+            # Support both legacy 'external_proxy' and new 'chains' list
+            chains_data = []
+            if current_sub:
+                if current_sub.get('chains'):
+                    chains_data = current_sub['chains']
+                elif current_sub.get('external_proxy'):
+                    # Convert legacy format to chains list
+                    legacy_ext = current_sub['external_proxy']
+                    if 'name' not in legacy_ext:
+                        legacy_ext['name'] = "🇺🇸 运营专线 (美国静态)"
+                    if 'dialer_id' not in legacy_ext:
+                        legacy_ext['dialer_id'] = current_sub.get('dialer_id')
+                    if 'dialer_name' not in legacy_ext:
+                        legacy_ext['dialer_name'] = current_sub.get('dialer_name')
+                    chains_data = [legacy_ext]
+            
+            for chain_conf in reversed(chains_data):
+                if chain_conf.get('server') and chain_conf.get('port'):
                     # Find the dialer node
-                    dmit_node_name = None
+                    dialer_node_name = None
                     
-                    # 1. Check for explicit dialer_id in subscription
-                    if current_sub.get('dialer_id'):
+                    # 1. Check for explicit dialer_id in chain or sub
+                    target_dialer_id = chain_conf.get('dialer_id') or current_sub.get('dialer_id')
+                    if target_dialer_id:
                         for node in nodes:
-                            if node.get('managed_id') == current_sub['dialer_id']:
-                                dmit_node_name = node['name']
+                            if node.get('managed_id') == target_dialer_id:
+                                dialer_node_name = node['name']
                                 break
                     
-                    # 2. Check for explicit dialer_name (partial match) in subscription
-                    if not dmit_node_name and current_sub.get('dialer_name'):
+                    # 2. Check for explicit dialer_name in chain or sub
+                    target_dialer_name = chain_conf.get('dialer_name') or current_sub.get('dialer_name')
+                    if not dialer_node_name and target_dialer_name:
                         for node in nodes:
-                            if current_sub['dialer_name'].lower() in node['name'].lower():
-                                dmit_node_name = node['name']
+                            if target_dialer_name.lower() in node['name'].lower():
+                                dialer_node_name = node['name']
                                 break
 
                     # 3. Fallback to DMIT (legacy behavior)
-                    if not dmit_node_name:
+                    if not dialer_node_name:
                         for node in nodes:
                             if 'DMIT' in node['name']:
-                                dmit_node_name = node['name']
+                                dialer_node_name = node['name']
                                 break
                     
                     # 4. Final fallback to first node
-                    if not dmit_node_name and nodes:
-                        dmit_node_name = nodes[0]['name']
+                    if not dialer_node_name and nodes:
+                        dialer_node_name = nodes[0]['name']
 
                     ext_proxy = {
-                        "name": external_proxy_name,
-                        "type": ext.get('type', 'socks5'),
-                        "server": ext['server'],
-                        "port": int(ext['port']),
+                        "name": chain_conf.get('name', "🛸 运营专线"),
+                        "type": chain_conf.get('type', 'socks5'),
+                        "server": chain_conf['server'],
+                        "port": int(chain_conf['port']),
                     }
-                    if ext.get('username'):
-                        ext_proxy['username'] = ext['username']
-                        ext_proxy['password'] = ext.get('password', '')
+                    if chain_conf.get('username'):
+                        ext_proxy['username'] = chain_conf['username']
+                        ext_proxy['password'] = chain_conf.get('password', '')
                     
-                    # KEY FIX: The External Proxy uses the selected node as its dialer
                     # Chain: Client -> Dialer -> External IP -> Target
-                    if dmit_node_name:
-                        ext_proxy['dialer-proxy'] = dmit_node_name
+                    if dialer_node_name:
+                        ext_proxy['dialer-proxy'] = dialer_node_name
                         
                     config_yaml['proxies'].insert(0, ext_proxy)
             

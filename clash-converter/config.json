@@ -1,0 +1,57 @@
+{
+    "nodes": [
+        {
+            "id": "1770050962",
+            "name": "DMIT_us",
+            "url": "vless://e7bef160-d9db-4e98-81f2-b346ec4d1c33@64.186.234.15:4887?type=tcp&security=reality&flow=xtls-rprx-vision&sni=www.oracle.com&fp=chrome&pbk=QoL6XG7RxiVrLDi12fBcbai1tkkx1jSbglTQ45PF2SM&sid=9b#DMIT_us",
+            "limit_gb": 123,
+            "used_bytes": 0,
+            "expiry": null,
+            "chain_with": null
+        },
+        {
+            "id": "1770051023",
+            "name": "JP_IIJ",
+            "url": "vless://0ad66a43-0ea7-4070-a8fa-7bcf471e5605@45.192.241.28:666?type=tcp&encryption=none&security=reality&pbk=A4GdKU0nm_SyNGqJJ0GWETc-AdRqTcQFK2mOE5IR3hQ&fp=chrome&sni=www.yahoo.co.jp&sid=e6a80cfca7e1&spx=%2F#JP-IIJ-8aquc2cs",
+            "limit_gb": 1000,
+            "used_bytes": 0,
+            "expiry": null,
+            "chain_with": null
+        }
+    ],
+    "subscriptions": [
+        {
+            "id": "1770051051",
+            "name": "二狗套餐",
+            "token": "2i2hzXjstICpoGjh",
+            "node_ids": [
+                "1770050962",
+                "1770051023"
+            ],
+            "expiry": null,
+            "status": "active",
+            "used_bytes": 0,
+            "limit_gb": 45,
+            "chains": [
+                {
+                    "name": "🇺🇸 运营专线 (美国静态)",
+                    "type": "socks5",
+                    "server": "isp.decodo.com",
+                    "port": 10003,
+                    "username": "spc8vh23z1",
+                    "password": "8q8dgJWfJc3br8~Zaq",
+                    "dialer_name": "DMIT_us"
+                },
+                {
+                    "name": "🇯🇵 运营专线 (日本静态)",
+                    "type": "socks5",
+                    "server": "isp.decodo.com",
+                    "port": 10010,
+                    "username": "spc8vh23z1",
+                    "password": "8q8dgJWfJc3br8~Zaq",
+                    "dialer_name": "JP_IIJ"
+                }
+            ]
+        }
+    ]
+}
