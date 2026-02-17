@@ -419,6 +419,12 @@ class SubBridgeHandler(BaseHTTPRequestHandler):
                         # Support external proxy for chain
                         if "external_proxy" in data:
                             s["external_proxy"] = data["external_proxy"]
+                        if "chains" in data:
+                            s["chains"] = data["chains"]
+                        if "dialer_id" in data:
+                            s["dialer_id"] = data["dialer_id"]
+                        if "dialer_name" in data:
+                            s["dialer_name"] = data["dialer_name"]
                         if "template" in data:
                             s["template"] = data["template"]
                         found = True
