@@ -671,7 +671,9 @@ class SubBridgeHandler(BaseHTTPRequestHandler):
                     config_yaml['proxies'].insert(0, ext_proxy)
             
             # Handle Relay / Chaining
+            external_proxy_names = [p['name'] for p in config_yaml['proxies'] if p['name'] not in [n['name'] for n in nodes]]
             managed_node_names = [n['name'] for n in nodes]
+            relay_names = []
             relays = []
             for node in nodes:
                 if node.get('chain_with'):
@@ -690,7 +692,7 @@ class SubBridgeHandler(BaseHTTPRequestHandler):
             
             # Update ALL proxy-groups
             relay_names = [r['name'] for r in relays]
-            select_proxies = managed_node_names + relay_names
+            select_proxies = managed_node_names + relay_names + external_proxy_names
             for group in config_yaml.get('proxy-groups', []):
                 group_type = group.get('type', '')
                 if group_type == 'url-test':
