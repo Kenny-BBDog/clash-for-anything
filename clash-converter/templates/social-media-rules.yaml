@@ -21,7 +21,6 @@ geo-update-interval: 24
 # ===== 性能优化 =====
 keep-alive-interval: 30
 find-process-mode: strict
-global-client-fingerprint: chrome
 
 # ===== 嗅探 =====
 sniffer:
@@ -120,7 +119,6 @@ rules:
   - DOMAIN-SUFFIX,baidu.com,DIRECT
   - DOMAIN-SUFFIX,jd.com,DIRECT
   - GEOSITE,google,🔒 运营安全专线 (住宅IP推荐)
-  - GEOSITE,gplay,🔒 运营安全专线 (住宅IP推荐)
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT,no-resolve
 

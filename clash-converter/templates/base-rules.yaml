@@ -20,7 +20,6 @@ geo-update-interval: 24
 # ===== 性能优化参数 =====
 keep-alive-interval: 30
 find-process-mode: strict
-global-client-fingerprint: chrome
 
 # ===== Sniffer 域名嗅探 =====
 sniffer:
@@ -171,8 +170,6 @@ rules:
 
   # ===== 其他规则 =====
   - GEOSITE,google,🚀 代理选择
-  - GEOSITE,gplay,🚀 代理选择
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT,no-resolve
   - MATCH,🚀 代理选择
-
