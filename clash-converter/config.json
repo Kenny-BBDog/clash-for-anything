@@ -37,8 +37,8 @@
                     "name": "🇺🇸 运营专线 (美国静态)",
                     "type": "socks5",
                     "server": "isp.decodo.com",
-                    "port": 10003,
-                    "username": "spc8vh23z1",
+                    "port": 10005,
+                    "username": "user-spc8vh23z1-country-us",
                     "password": "8q8dgJWfJc3br8~Zaq",
                     "dialer_name": "DMIT_us"
                 },
