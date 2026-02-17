@@ -692,14 +692,15 @@ class SubBridgeHandler(BaseHTTPRequestHandler):
             
             # Update ALL proxy-groups
             relay_names = [r['name'] for r in relays]
-            select_proxies = managed_node_names + relay_names + external_proxy_names
+            # Prioritize landing IPs for operators
+            select_proxies = external_proxy_names + managed_node_names + relay_names
             for group in config_yaml.get('proxy-groups', []):
                 group_type = group.get('type', '')
                 if group_type == 'url-test':
                     current = group.get('proxies', [])
-                    for name in managed_node_names:
+                    for name in managed_node_names + external_proxy_names:
                         if name not in current: current.append(name)
-                    group['proxies'] = [p for p in current if p in managed_node_names]
+                    group['proxies'] = [p for p in current if p in managed_node_names or p in external_proxy_names]
                 elif group_type == 'select':
                     current = group.get('proxies', [])
                     for name in select_proxies:
