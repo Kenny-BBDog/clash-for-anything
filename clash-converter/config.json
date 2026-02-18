@@ -17,21 +17,36 @@
             "used_bytes": 0,
             "expiry": null,
             "chain_with": null
+        },
+        {
+            "id": "1770051088",
+            "name": "KR_VPS",
+            "url": "vless://8ad88d98-fca4-469e-89c8-580d6d05a967@203.231.242.78:2083?type=tcp&security=reality&flow=xtls-rprx-vision&sni=www.yahoo.com&fp=chrome&pbk=Y3aLQPKK0-ipROME3uCO4ivyTgBS1zbuANRDyTmfi2A&sid=e6a80cfca7e1#KR_Reality",
+            "limit_gb": 500,
+            "used_bytes": 0,
+            "expiry": null,
+            "chain_with": null
         }
     ],
     "subscriptions": [
         {
-            "id": "1770051051",
-            "name": "二狗套餐",
-            "token": "2i2hzXjstICpoGjh",
+            "id": "1770060416",
+            "name": "二狗",
+            "token": "tFhmRkkhMFpScsow",
             "node_ids": [
                 "1770050962",
-                "1770051023"
+                "1770051023",
+                "1770051088"
             ],
+            "traffic_base": {
+                "1770050962": 57146033364,
+                "1770051023": 0,
+                "1770051088": 0
+            },
+            "limit_gb": 500,
+            "used_bytes": 0,
             "expiry": null,
             "status": "active",
-            "used_bytes": 0,
-            "limit_gb": 45,
             "chains": [
                 {
                     "name": "🇺🇸 运营专线 (美国静态)",
@@ -51,7 +66,8 @@
                     "password": "8q8dgJWfJc3br8~Zaq",
                     "dialer_name": "JP_IIJ"
                 }
-            ]
+            ],
+            "template": "social-media-rules.yaml"
         }
     ]
 }
