@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub Hub v3 | 企业级私人订阅中心</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tabs System */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 0.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--glass-border);
+            width: fit-content;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+
+        .tab-content.show {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        /* Grids & Cards */
+        .node-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            position: relative;
+            transition: 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .btn-plus {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px -5px var(--primary-glow);
+            cursor: pointer;
+            z-index: 100;
+            transition: 0.3s;
+        }
+
+        .btn-plus:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Subscription Manager Section */
+        .sub-manager {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+        }
+
+        .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .sub-table th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .sub-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .status-badge.expired {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* UI Elements */
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            transition: 0.2s;
+            color: white;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 600px;
+            padding: 2.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 0.8rem 1.2rem;
+            color: white;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        /* Node Selector List */
+        .node-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #0f172a;
+            border-radius: 1rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .node-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .node-option input {
+            width: auto;
+        }
+
+        /* Loader & Toast */
+        .page-loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            transition: 0.5s;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-loader" id="pageLoader">
+        <div class="spinner"></div>
+        <p style="color: var(--text-dim);">Connecting to Managed Sub Hub...</p>
+    </div>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Sub Hub v3</h1>
+                <p style="color: var(--text-dim);">托管式多链接订阅管理中心 (Private Cloud Edition)</p>
+            </div>
+            <div id="connStatus" style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">● 系统就绪</div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('nodes')">🌐 节点池子</button>
+            <button class="tab-btn" onclick="switchTab('subs')">🎫 订阅管理</button>
+            <button class="tab-btn" onclick="switchTab('guest')">🤝 访客通行证</button>
+        </div>
+
+        <div id="nodesTab" class="tab-content show">
+            <div class="node-grid" id="nodeGrid"></div>
+        </div>
+
+        <div id="subsTab" class="tab-content">
+            <div class="sub-manager">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>活跃订阅链接</h3>
+                    <button class="btn-action" onclick="openSubModal()">+ 新建订阅方案</button>
+                </div>
+                <table class="sub-table" id="subTable">
+                    <thead>
+                        <tr>
+                            <th>方案名称</th>
+                            <th>节点数量</th>
+                            <th>到期时间</th>
+                            <th>状态</th>
+                            <th>订阅链接</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="guestTab" class="tab-content">
+            <div class="sub-manager">
+                <h3>访客通行证 (临时体验)</h3>
+                <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem;">为朋友快速生成一个受限节点且限时的 SS 订阅。</p>
+                <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; max-width: 600px;">
+                    <div class="form-group">
+                        <label>选择包含的节点</label>
+                        <div class="node-selector" id="guestNodePicker"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>通行证名称 (访客备注)</label>
+                        <input type="text" id="guestName" placeholder="例如：老王 - 临时用一下">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>生效时长</label>
+                            <select id="guestDuration">
+                                <option value="0.5">30 分钟</option>
+                                <option value="2">2 小时</option>
+                                <option value="24">24 小时</option>
+                                <option value="168">7 天</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>流量限额 (GB)</label>
+                            <input type="number" id="guestLimit" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>输出格式</label>
+                        <select id="guestFormat"
+                            style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(148, 163, 184, 0.2); color: var(--text-main); margin-bottom: 1rem;">
+                            <option value="clash">Clash 订阅链接 (推荐)</option>
+                            <option value="ss">SS 链接 (单节点)</option>
+                        </select>
+                    </div>
+                    <button class="btn-action" onclick="generateGuest()">生成通行证</button>
+                    <div id="guestOutput"
+                        style="display:none; padding:1.5rem; background:#0f172a; border-radius:1rem; font-family:monospace; border: 1px solid var(--accent); word-break:break-all; color: var(--accent);">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-plus" onclick="openNodeModal()" id="mainPlus">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </div>
+
+    <!-- Node Modal -->
+    <div class="modal-overlay" id="nodeModal">
+        <div class="modal">
+            <h3 class="modal-header" id="nodeModalTitle">节点源配置</h3>
+            <div class="form-group">
+                <label>节点名称 (用于识别)</label>
+                <input type="text" id="nodeName" placeholder="例如：US-Premium-01">
+            </div>
+            <div class="form-group">
+                <label>节点链接 / 订阅 URL</label>
+                <input type="text" id="nodeUrl" placeholder="vless://... 或 http://...">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>流量限额 (GB)</label>
+                    <input type="number" id="nodeLimit" value="0">
+                </div>
+                <div class="form-group">
+                    <label>过期日期</label>
+                    <input type="date" id="nodeExpiry">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>前置代理 (Relay 模式)</label>
+                <select id="nodeChain">
+                    <option value="">直连</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button class="btn-outline" onclick="closeModal('nodeModal')">取消</button>
+                <button class="btn-action" onclick="saveNode()">保存节点</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscription Modal -->
+    <div class="modal-overlay" id="subModal">
+        <div class="modal">
+            <h3 class="modal-header" id="subModalTitle">创建订阅方案</h3>
+            <div class="form-group">
+                <label>方案名称 (用户标识)</label>
+                <input type="text" id="subName" placeholder="例如：张三 - 包月套餐">
+            </div>
+            <div class="form-group">
+                <label>包含节点 (池子里选择)</label>
+                <div class="node-selector" id="subNodePicker"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>方案流量限额 (GB)</label>
+                    <input type="number" id="subLimit" value="0">
+                </div>
+                <div class="form-group">
+                    <label>方案到期时间</label>
+                    <input type="date" id="subExpiry">
+                </div>
+            </div>
+            <div class="form-group"
+                style="border-top: 1px solid var(--glass-border); padding-top: 1rem; margin-top: 0.5rem;">
+                <label>🌐 静态IP链式代理 (可选)</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+                    <select id="extProxyType">
+                        <option value="">无</option>
+                        <option value="socks5">SOCKS5</option>
+                        <option value="http">HTTP</option>
+                    </select>
+                    <input type="text" id="extProxyServer" placeholder="服务器 (static2.hydraproxy.com)">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+                    <input type="number" id="extProxyPort" placeholder="端口 (3114)">
+                    <input type="text" id="extProxyUser" placeholder="用户名 (可选)">
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button class="btn-outline" onclick="closeModal('subModal')">取消</button>
+                <button class="btn-action" onclick="saveSub()">立即发布订阅</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extend Modal -->
+    <div class="modal-overlay" id="extendModal">
+        <div class="modal" style="max-width: 400px;">
+            <h3 class="modal-header">✈️ 延长有效期</h3>
+            <input type="hidden" id="extendSubId">
+            <div class="form-group">
+                <label>当前到期时间</label>
+                <div id="currentExpiry" style="color: var(--text-dim); font-size: 0.9rem;">-</div>
+            </div>
+            <div class="form-group">
+                <label>延长时间</label>
+                <select id="extendHours">
+                    <option value="2">2 小时</option>
+                    <option value="24">1 天</option>
+                    <option value="72">3 天</option>
+                    <option value="168" selected>7 天</option>
+                    <option value="720">30 天</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button class="btn-outline" onclick="closeModal('extendModal')">取消</button>
+                <button class="btn-action" onclick="confirmExtend()">确认延期</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">操作成功</div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let nodesData = [];
+        let subsData = [];
+        let editingNodeIndex = null;
+        let editingSubId = null;
+
+        window.addEventListener('load', () => {
+            refreshAll();
+            setTimeout(() => { document.getElementById('pageLoader').style.display = 'none'; }, 1000);
+        });
+
+        async function refreshAll() {
+            try {
+                const nodeRes = await fetch(`${API_BASE}/api/nodes`);
+                nodesData = await nodeRes.json();
+
+                const subRes = await fetch(`${API_BASE}/api/subscriptions`);
+                subsData = await subRes.json();
+
+                renderNodes();
+                renderSubs();
+                updatePickers();
+                updateChainOptions();
+            } catch (e) { showToast("Sync Failed", true); }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('show'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('show');
+            document.getElementById('mainPlus').style.display = tab === 'nodes' ? 'flex' : 'none';
+        }
+
+        function renderNodes() {
+            const grid = document.getElementById('nodeGrid');
+            grid.innerHTML = nodesData.length ? '' : '<p style="grid-column:1/-1; text-align:center; padding:5rem; color:var(--text-dim);">节点池为空，请添加节点源。</p>';
+            nodesData.forEach((n, idx) => {
+                const usedGb = (n.used_bytes / (1024 ** 3)).toFixed(2);
+                const limit = n.limit_gb > 0 ? n.limit_gb : '∞';
+                const percent = n.limit_gb > 0 ? Math.min(100, (usedGb / n.limit_gb) * 100) : 0;
+                const emoji = n.name.includes('美国') ? '🇺🇸' : (n.name.includes('日本') ? '🇯🇵' : '🌐');
+
+                grid.innerHTML += `
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-weight:600; font-size:1.1rem;">${emoji} ${n.name}</div>
+                            <span style="font-size:0.65rem; color:var(--primary); font-weight:600;">ACTIVE</span>
+                        </div>
+                        <div style="font-size:0.85rem; color:var(--text-dim);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+                                <span>消耗情况</span><span>${usedGb} / ${limit} GB</span>
+                            </div>
+                            <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                                <div style="width:${percent}%; height:100%; background:var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="font-size:0.8rem; display:flex; justify-content:space-between;">
+                            <span style="color:var(--text-dim);">到期: ${n.expiry || '永不'}</span>
+                            <span style="color:var(--accent);">${n.chain_with ? '⛓️ ' + n.chain_with : ''}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--glass-border); padding-top:0.8rem;">
+                             <div style="font-size:0.65rem; color:var(--text-dim); max-width:180px; overflow:hidden; text-overflow:ellipsis;">${n.url}</div>
+                             <div style="display:flex; gap:0.5rem;">
+                                <button class="btn-icon" onclick="openNodeModal(${idx})">✎</button>
+                                <button class="btn-icon" style="color:var(--danger)" onclick="deleteNode(${idx})">🗑</button>
+                             </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderSubs() {
+            const tbody = document.querySelector('#subTable tbody');
+            tbody.innerHTML = subsData.length ? '' : '<tr><td colspan="6" style="text-align:center; color:var(--text-dim); padding:3rem;">暂无订阅方案</td></tr>';
+            subsData.forEach(s => {
+                const subUrl = `${API_BASE}/sub/${s.token}`;
+                const usedGb = (s.used_bytes / (1024 ** 3)).toFixed(2);
+                const limitGb = s.limit_gb || 0;
+                const limitDisp = limitGb > 0 ? limitGb : '∞';
+                const percent = limitGb > 0 ? Math.min(100, (usedGb / limitGb) * 100) : 0;
+                const barColor = percent > 90 ? 'var(--danger)' : (percent > 70 ? 'var(--warning)' : 'var(--primary)');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight:600;">${s.name}</td>
+                        <td style="color:var(--text-dim);">
+                            <div style="font-size:0.8rem; margin-bottom:4px;">${usedGb} / ${limitDisp} GB</div>
+                            <div style="height:4px; width:80px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+                                <div style="width:${percent}%; height:100%; background:${barColor};"></div>
+                            </div>
+                        </td>
+                        <td style="font-size:0.85rem;">${s.expiry || '永不过期'}</td>
+                        <td><span class="status-badge">有效</span></td>
+                        <td><div style="max-width:150px; overflow:hidden; text-overflow:ellipsis; cursor:pointer; color:var(--primary); font-size:0.8rem;" onclick="copyText('${subUrl}')">${subUrl}</div></td>
+                        <td>
+                            <div style="display:flex; gap:0.5rem;">
+                                <button class="btn-icon" onclick="copyText('${subUrl}')">🔗</button>
+                                <button class="btn-icon" onclick="openExtendModal('${s.id}', '${s.expiry || ''}')" title="延长有效期">⏱️</button>
+                                <button class="btn-icon" onclick="resetSubTraffic('${s.id}')" title="流量清零">🔄</button>
+                                <button class="btn-icon" onclick="openSubModal('${s.id}')">✎</button>
+                                <button class="btn-icon" style="color:var(--danger)" onclick="deleteSub('${s.id}')">🗑</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updatePickers() {
+            const pickers = [document.getElementById('subNodePicker'), document.getElementById('guestNodePicker')];
+            pickers.forEach(p => {
+                p.innerHTML = nodesData.map(n => `
+                    <label class="node-option">
+                        <input type="checkbox" value="${n.id}" checked> ${n.name}
+                    </label>
+                `).join('');
+            });
+        }
+
+        function updateChainOptions() {
+            const sel = document.getElementById('nodeChain');
+            sel.innerHTML = '<option value="">直连</option>' +
+                nodesData.filter((_, i) => i !== editingNodeIndex).map(n => `<option value="${n.name}">${n.name}</option>`).join('');
+        }
+
+        function openNodeModal(idx = null) {
+            editingNodeIndex = idx;
+            const m = document.getElementById('nodeModal');
+            document.getElementById('nodeModalTitle').innerText = idx !== null ? '修改节点源' : '池子入库 - 新节点源';
+            if (idx !== null) {
+                const n = nodesData[idx];
+                document.getElementById('nodeName').value = n.name;
+                document.getElementById('nodeUrl').value = n.url;
+                document.getElementById('nodeLimit').value = n.limit_gb;
+                document.getElementById('nodeExpiry').value = n.expiry || '';
+                document.getElementById('nodeChain').value = n.chain_with || '';
+            } else {
+                document.getElementById('nodeName').value = '';
+                document.getElementById('nodeUrl').value = '';
+                document.getElementById('nodeLimit').value = 0;
+                document.getElementById('nodeExpiry').value = '';
+                document.getElementById('nodeChain').value = '';
+            }
+            m.style.display = 'flex';
+            updateChainOptions();
+        }
+
+        async function saveNode() {
+            const data = {
+                name: document.getElementById('nodeName').value,
+                url: document.getElementById('nodeUrl').value,
+                limit_gb: parseInt(document.getElementById('nodeLimit').value),
+                expiry: document.getElementById('nodeExpiry').value || null,
+                chain_with: document.getElementById('nodeChain').value || null
+            };
+            const method = editingNodeIndex !== null ? 'PUT' : 'POST';
+            const url = editingNodeIndex !== null ? `${API_BASE}/api/nodes?index=${editingNodeIndex}` : `${API_BASE}/api/nodes`;
+
+            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            closeModal('nodeModal');
+            refreshAll();
+            showToast("内容已更新于节点池");
+        }
+
+        async function deleteNode(idx) {
+            if (!confirm("删除该节点会导致所有关联订阅失效，确定吗？")) return;
+            await fetch(`${API_BASE}/api/nodes?index=${idx}`, { method: 'DELETE' });
+            refreshAll();
+        }
+
+        function openSubModal(id = null) {
+            editingSubId = id;
+            const m = document.getElementById('subModal');
+            document.getElementById('subModalTitle').innerText = id ? '修改订阅方案' : '创建订阅方案';
+            if (id) {
+                const s = subsData.find(x => x.id === id);
+                document.getElementById('subName').value = s.name;
+                document.getElementById('subLimit').value = s.limit_gb || 0;
+                document.getElementById('subExpiry').value = s.expiry || '';
+                // Pre-check nodes
+                document.querySelectorAll('#subNodePicker input').forEach(i => {
+                    i.checked = s.node_ids.includes(i.value);
+                });
+                // External proxy
+                const ext = s.external_proxy || {};
+                document.getElementById('extProxyType').value = ext.type || '';
+                document.getElementById('extProxyServer').value = ext.server || '';
+                document.getElementById('extProxyPort').value = ext.port || '';
+                document.getElementById('extProxyUser').value = ext.username || '';
+            } else {
+                document.getElementById('subName').value = '';
+                document.getElementById('subLimit').value = 0;
+                document.getElementById('subExpiry').value = '';
+                document.querySelectorAll('#subNodePicker input').forEach(i => i.checked = true);
+                // Clear external proxy
+                document.getElementById('extProxyType').value = '';
+                document.getElementById('extProxyServer').value = '';
+                document.getElementById('extProxyPort').value = '';
+                document.getElementById('extProxyUser').value = '';
+            }
+            m.style.display = 'flex';
+        }
+
+        async function saveSub() {
+            const selectedNodes = Array.from(document.querySelectorAll('#subNodePicker input:checked')).map(i => i.value);
+            const data = {
+                name: document.getElementById('subName').value,
+                node_ids: selectedNodes,
+                limit_gb: parseInt(document.getElementById('subLimit').value),
+                expiry: document.getElementById('subExpiry').value || null
+            };
+            // External proxy
+            const extType = document.getElementById('extProxyType').value;
+            if (extType) {
+                data.external_proxy = {
+                    type: extType,
+                    server: document.getElementById('extProxyServer').value,
+                    port: parseInt(document.getElementById('extProxyPort').value) || 0,
+                    username: document.getElementById('extProxyUser').value || ''
+                };
+            } else {
+                data.external_proxy = null;
+            }
+            const method = editingSubId ? 'PUT' : 'POST';
+            const url = editingSubId ? `${API_BASE}/api/subscriptions?id=${editingSubId}` : `${API_BASE}/api/subscriptions`;
+
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            closeModal('subModal');
+            refreshAll();
+            showToast(editingSubId ? "订阅已更新" : "订阅链路已生成");
+        }
+
+        async function deleteSub(id) {
+            if (!confirm("撤销该订阅后，用户将无法继续更新，确定？")) return;
+            await fetch(`${API_BASE}/api/subscriptions?id=${id}`, { method: 'DELETE' });
+            refreshAll();
+        }
+
+        async function resetSubTraffic(id) {
+            if (!confirm("确定要将此订阅的已用流量清零吗？\n(这不仅会更新显示，还会更新下发的 Subscription-Userinfo 头部)")) return;
+            await fetch(`${API_BASE}/api/subscriptions/reset?id=${id}`, { method: 'POST' });
+            refreshAll();
+            showToast("流量已初始化");
+        }
+
+        function openExtendModal(id, currentExpiry) {
+            document.getElementById('extendSubId').value = id;
+            document.getElementById('currentExpiry').innerText = currentExpiry || '永久';
+            document.getElementById('extendModal').style.display = 'flex';
+        }
+
+        async function confirmExtend() {
+            const id = document.getElementById('extendSubId').value;
+            const hours = document.getElementById('extendHours').value;
+            await fetch(`${API_BASE}/api/subscriptions/extend`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, extend_hours: parseFloat(hours) })
+            });
+            closeModal('extendModal');
+            refreshAll();
+            showToast("有效期已延长");
+        }
+
+        async function generateGuest() {
+            const nodeIds = Array.from(document.querySelectorAll('#guestNodePicker input:checked')).map(i => i.value);
+            const name = document.getElementById('guestName').value;
+            const hours = document.getElementById('guestDuration').value;
+            const limit = document.getElementById('guestLimit').value;
+            const format = document.getElementById('guestFormat').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/guest-pass`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, node_ids: nodeIds, duration_hours: hours, limit_gb: limit, format: format })
+                });
+                const data = await res.json();
+
+                const out = document.getElementById('guestOutput');
+                out.style.display = 'block';
+                if (data.status === 'ok') {
+                    if (data.format === 'clash') {
+                        out.innerHTML = `
+                            <div style="font-weight:bold; color:#4ade80; margin-bottom:0.5rem;">CLASH SUBSCRIPTION READY</div>
+                            <div style="word-break: break-all; margin-bottom:0.5rem;">${data.link}</div>
+                            <div style="font-size:0.85rem; color:var(--text-dim); margin-bottom:0.5rem;">有效期至: ${data.expiry}</div>
+                            <button onclick="copyText('${data.link}')" class="btn-outline" style="padding:0.25rem 0.5rem; font-size:0.8rem;">复制链接</button>
+                        `;
+                        showToast("Clash 通行证已生成");
+                    } else {
+                        out.innerHTML = `
+                            <div style="font-weight:bold; color:#4ade80; margin-bottom:0.5rem;">SS LINK READY</div>
+                            <div style="word-break: break-all; margin-bottom:0.5rem;">${data.link}</div>
+                            <button onclick="copyText('${data.link}')" class="btn-outline" style="padding:0.25rem 0.5rem; font-size:0.8rem;">复制链接</button>
+                        `;
+                        showToast("SS 通行证已生成");
+                    }
+                } else {
+                    out.innerText = "Error: " + (data.message || "Unknown error");
+                    showToast("生成失败", true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast("网络请求失败", true);
+            }
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showToast(msg, error = false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.background = error ? 'var(--danger)' : 'var(--accent)';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+        function copyText(txt) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt)
+                    .then(() => showToast("已复制到剪贴板"))
+                    .catch(() => fallbackCopy(txt));
+            } else {
+                fallbackCopy(txt);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                showToast(successful ? '已复制到剪贴板' : '复制失败，请手动选择', !successful);
+            } catch (err) {
+                showToast('复制失败', true);
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+# ======================================================
+# Clash 运营极简模板 (Sub Hub v2 - User Friendly)
+# 核心目标：安全、简单、直观
+# ======================================================
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+allow-lan: true
+bind-address: '*'
+mode: rule
+log-level: warning
+ipv6: false
+external-controller: 127.0.0.1:9090
+unified-delay: true
+tcp-concurrent: true
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
+
+# ===== 性能优化 =====
+keep-alive-interval: 30
+find-process-mode: strict
+
+# ===== 嗅探 =====
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+# ===== 系统设置 =====
+tun:
+  enable: true
+  stack: mixed
+  dns-hijack: ["any:53"]
+  auto-route: true
+  auto-detect-interface: true
+
+dns:
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver: [119.29.29.29, 223.5.5.5]
+  nameserver: [https://doh.pub/dns-query, https://dns.alidns.com/dns-query]
+  fallback: [https://dns.google/dns-query, https://cloudflare-dns.com/dns-query]
+
+hosts:
+  'dashboard.subhub': 64.186.234.15
+
+# 节点注入
+proxies: []
+
+# ===== 简洁分组 (针对运营优化) =====
+proxy-groups:
+  - name: 🔒 运营安全专线 (住宅IP推荐)
+    type: select
+    proxies: [] # 留空，由脚本自动按照顺序填入 (静态IP优先)
+
+  - name: ♻️ 自动最优 (推荐)
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    proxies: [] # 留空，由脚本自动填入
+
+  - name: 🌐 其它网页浏览 (普通线路)
+    type: select
+    proxies: [] # 留空，由脚本自动填入
+
+# ===== 极简分流规则 =====
+rules:
+  # 基础排除
+  - DOMAIN,dashboard.subhub,DIRECT
+  - DOMAIN-SUFFIX,subhub,DIRECT
+  - IP-CIDR,64.186.234.15/32,DIRECT,no-resolve
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+
+  # 📱 核心社媒 (必须走安全专线)
+  - DOMAIN-SUFFIX,twitter.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,x.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,instagram.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,facebook.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,tiktok.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,youtube.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,pinterest.com,🔒 运营安全专线 (住宅IP推荐)
+  
+  # 🛒 跨境电商 (必须走安全专线)
+  - DOMAIN-SUFFIX,shopify.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,tiktokshop.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,amazon.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,amazonsellerservices.com,🔒 运营安全专线 (住宅IP推荐)
+
+  # 🤖 AI 服务
+  - DOMAIN-SUFFIX,openai.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,chatgpt.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,anthropic.com,🔒 运营安全专线 (住宅IP推荐)
+  - DOMAIN-SUFFIX,claude.ai,🔒 运营安全专线 (住宅IP推荐)
+
+  # 🇨🇳 国内应用 (自动直连)
+  - DOMAIN-SUFFIX,qq.com,DIRECT
+  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT
+  - DOMAIN-SUFFIX,wechat.com,DIRECT
+  - DOMAIN-SUFFIX,taobao.com,DIRECT
+  - DOMAIN-SUFFIX,tmall.com,DIRECT
+  - DOMAIN-SUFFIX,alipay.com,DIRECT
+  - DOMAIN-SUFFIX,douyin.com,DIRECT
+  - DOMAIN-SUFFIX,bilibili.com,DIRECT
+  - DOMAIN-SUFFIX,baidu.com,DIRECT
+  - DOMAIN-SUFFIX,jd.com,DIRECT
+  - GEOSITE,google,🔒 运营安全专线 (住宅IP推荐)
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT,no-resolve
+
+  # 兜底规则
+  - MATCH,🌐 其它网页浏览 (普通线路)

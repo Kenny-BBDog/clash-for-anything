@@ -1,0 +1,112 @@
+{
+    "nodes": [
+        {
+            "id": "1770050962",
+            "name": "DMIT_us",
+            "url": "vless://e7bef160-d9db-4e98-81f2-b346ec4d1c33@64.186.234.15:4887?type=tcp&security=reality&flow=xtls-rprx-vision&sni=www.oracle.com&fp=chrome&pbk=QoL6XG7RxiVrLDi12fBcbai1tkkx1jSbglTQ45PF2SM&sid=9b#DMIT_us",
+            "limit_gb": 400,
+            "used_bytes": 81769675162,
+            "expiry": null,
+            "chain_with": null
+        },
+        {
+            "id": "1770051023",
+            "name": "JP_IIJ",
+            "url": "vless://0ad66a43-0ea7-4070-a8fa-7bcf471e5605@45.192.241.28:666?type=tcp&encryption=none&security=reality&pbk=A4GdKU0nm_SyNGqJJ0GWETc-AdRqTcQFK2mOE5IR3hQ&fp=chrome&sni=www.yahoo.co.jp&sid=e6a80cfca7e1&spx=%2F#JP-IIJ-8aquc2cs",
+            "limit_gb": 1000,
+            "used_bytes": 0,
+            "expiry": null,
+            "chain_with": null
+        },
+        {
+            "id": "1770051088",
+            "name": "KR_VPS",
+            "url": "vless://8ad88d98-fca4-469e-89c8-580d6d05a967@203.231.242.78:2083?type=tcp&security=reality&flow=xtls-rprx-vision&sni=www.yahoo.com&fp=chrome&pbk=Y3aLQPKK0-ipROME3uCO4ivyTgBS1zbuANRDyTmfi2A&sid=e6a80cfca7e1#KR_Reality",
+            "limit_gb": 500,
+            "used_bytes": 0,
+            "expiry": null,
+            "chain_with": null
+        }
+    ],
+    "subscriptions": [
+        {
+            "id": "1770060416",
+            "name": "二狗",
+            "token": "tFhmRkkhMFpScsow",
+            "node_ids": [
+                "1770050962",
+                "1770051023",
+                "1770051088"
+            ],
+            "traffic_base": {
+                "1770050962": 57146033364,
+                "1770051023": 0,
+                "1770051088": 0
+            },
+            "limit_gb": 500,
+            "used_bytes": 0,
+            "expiry": null,
+            "status": "active",
+            "chains": [
+                {
+                    "name": "🇺🇸 运营专线 (美国静态)",
+                    "type": "socks5",
+                    "server": "isp.decodo.com",
+                    "port": 10005,
+                    "username": "user-spc8vh23z1-country-us",
+                    "password": "8q8dgJWfJc3br8~Zaq",
+                    "dialer_name": "DMIT_us"
+                },
+                {
+                    "name": "🇯🇵 运营专线 (日本静态)",
+                    "type": "socks5",
+                    "server": "isp.decodo.com",
+                    "port": 10010,
+                    "username": "spc8vh23z1",
+                    "password": "8q8dgJWfJc3br8~Zaq",
+                    "dialer_name": "JP_IIJ"
+                }
+            ],
+            "template": "social-media-rules.yaml"
+        },
+        {
+            "id": "1770304519",
+            "name": "客户-社媒运营专用",
+            "token": "pcSXjzikwOoBNLW0",
+            "node_ids": [
+                "1770050962"
+            ],
+            "traffic_base": {
+                "1770050962": 81431818438
+            },
+            "limit_gb": 500,
+            "used_bytes": 0,
+            "expiry": "2026-03-05",
+            "status": "active",
+            "external_proxy": {
+                "type": "socks5",
+                "server": "isp.decodo.com",
+                "port": 10002,
+                "username": "sp2cas07hg",
+                "password": "L9v_cZ3UAa4mzez4wa"
+            },
+            "template": "social-media-rules.yaml"
+        },
+        {
+            "id": "1770877551596",
+            "name": "WHC",
+            "token": "sOZytbtAknMJmkkd",
+            "node_ids": [
+                "1770050962"
+            ],
+            "limit_gb": 300.0,
+            "used_bytes": 0,
+            "expiry": "2026-02-19",
+            "status": "active",
+            "is_guest": true,
+            "traffic_base": {
+                "1770050962": 81769675162
+            }
+        }
+    ]
+}

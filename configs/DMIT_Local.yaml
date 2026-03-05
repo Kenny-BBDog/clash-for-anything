@@ -1,0 +1,413 @@
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+allow-lan: true
+bind-address: '*'
+mode: rule
+log-level: warning
+ipv6: false
+external-controller: 127.0.0.1:9090
+unified-delay: true
+tcp-concurrent: true
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
+
+# ===== 性能优化参数 =====
+keep-alive-interval: 30
+find-process-mode: strict
+global-client-fingerprint: chrome
+
+# ===== Sniffer 域名嗅探 - 解决 fake-ip 分流问题 =====
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+
+# ===== TUN 模式配置 =====
+# ⚠️ 注意：MTU 不要设置为 9000，会导致连接中断！
+tun:
+  enable: true
+  stack: mixed
+  dns-hijack:
+    - "any:53"
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: false  # 设为 true 可能与 Windows TUN 驱动冲突
+  mtu: 1500            # 标准以太网 MTU，不要改大！
+
+# ===== DNS 配置 - 国内外分流 =====
+dns:
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.localhost"
+    - "*.localdomain"
+    - "time.*.com"
+    - "time.*.gov"
+    - "time.*.edu.cn"
+    - "time.*.apple.com"
+    - "time?.*.com"
+    - "ntp.*.com"
+    - "*.ntp.org.cn"
+    - "+.pool.ntp.org"
+    - "localhost.ptlogin2.qq.com"
+    - "localhost.sec.qq.com"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "network-test.debian.org"
+    - "detectportal.firefox.com"
+    - "*.srv.nintendo.net"
+    - "+.stun.playstation.net"
+    - "xbox.*.*.microsoft.com"
+    - "+.xboxlive.com"
+    - "+.battlenet.com.cn"
+  default-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.quad9.net/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+    ipcidr:
+      - 240.0.0.0/4
+      - 0.0.0.0/32
+      - 127.0.0.1/32
+    domain:
+      - "+.google.com"
+      - "+.facebook.com"
+      - "+.twitter.com"
+      - "+.youtube.com"
+      - "+.xn--ngstr-lra8j.com"
+      - "+.googleapis.cn"
+
+proxies:
+  # DMIT 美国节点
+  - name: DMIT
+    type: vless
+    server: 64.186.234.15
+    port: 48870
+    uuid: e7bef160-d9db-4e98-81f2-b346ec4d1c33
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.oracle.com
+    client-fingerprint: chrome
+    network: tcp
+    reality-opts:
+      public-key: ojTyzmLo5kp63KO99GwDxaE0CIjkhiI3xV9eiUOs7lE
+      short-id: "9b"
+
+  # 日本 JP-IIJ 节点
+  - name: JP-IIJ
+    type: vless
+    server: 45.192.241.28
+    port: 666
+    uuid: 0ad66a43-0ea7-4070-a8fa-7bcf471e5605
+    tls: true
+    servername: www.yahoo.co.jp
+    client-fingerprint: chrome
+    network: tcp
+    reality-opts:
+      public-key: A4GdKU0nm_SyNGqJJ0GWETc-AdRqTcQFK2mOE5IR3hQ
+      short-id: e6a80cfca7e1
+
+  # 住宅IP（通过 DMIT 链式连接）
+  - name: 住宅IP
+    type: socks5
+    server: 161.77.227.227
+    port: 12324
+    username: 14af10dcbb5dd
+    password: a8b1e5e806
+    dialer-proxy: DMIT
+
+proxy-groups:
+  - name: 🚀 代理选择
+    type: select
+    proxies:
+      - 住宅IP
+      - DMIT
+      - JP-IIJ
+      - DIRECT
+
+rules:
+  # ===== IPRoyal 必须走 DMIT（避免循环）=====
+  - IP-CIDR,161.77.227.227/32,DMIT,no-resolve
+  
+  # ===== 进程级别规则 - 需要纯净国外环境的应用 =====
+  # Claude Code / Antigravity
+  - PROCESS-NAME,claude.exe,🚀 代理选择
+  - PROCESS-NAME,antigravity.exe,🚀 代理选择
+  - PROCESS-NAME,Antigravity.exe,🚀 代理选择
+  
+  # VS Code 相关（Copilot 等）
+  - PROCESS-NAME,Code.exe,🚀 代理选择
+  - PROCESS-NAME,code.exe,🚀 代理选择
+  
+  # Cursor
+  - PROCESS-NAME,Cursor.exe,🚀 代理选择
+  - PROCESS-NAME,cursor.exe,🚀 代理选择
+  
+  # JetBrains IDE
+  - PROCESS-NAME,idea64.exe,🚀 代理选择
+  - PROCESS-NAME,pycharm64.exe,🚀 代理选择
+  - PROCESS-NAME,webstorm64.exe,🚀 代理选择
+  - PROCESS-NAME,goland64.exe,🚀 代理选择
+  - PROCESS-NAME,rider64.exe,🚀 代理选择
+  
+  # Node.js（npm、yarn 等）
+  - PROCESS-NAME,node.exe,🚀 代理选择
+  
+  # Git
+  - PROCESS-NAME,git.exe,🚀 代理选择
+  - PROCESS-NAME,git-remote-https.exe,🚀 代理选择
+  
+  # AdsPower（需要连接 IPRoyal）
+  - PROCESS-NAME,adspower.exe,DMIT
+  - PROCESS-NAME,AdsPower.exe,DMIT
+  
+  # ======================================================
+  # ===== AI 应用 - 走代理选择（需要住宅IP时手动切换）=====
+  # ======================================================
+  # ⚠️ 逻辑变更说明：
+  # - AI 应用现在走 🚀 代理选择，不再强制走住宅IP
+  # - 如需使用住宅IP，请手动将代理选择切换到"住宅IP"
+  # - 这样可以避免住宅IP失效时影响所有AI访问
+  # ======================================================
+  
+  # ----- Claude / Anthropic -----
+  - DOMAIN-SUFFIX,anthropic.com,🚀 代理选择
+  - DOMAIN-SUFFIX,claude.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,claudeusercontent.com,🚀 代理选择
+  - DOMAIN,api.anthropic.com,🚀 代理选择
+  - DOMAIN,statsig.anthropic.com,🚀 代理选择
+  - DOMAIN-KEYWORD,anthropic,🚀 代理选择
+  - DOMAIN-KEYWORD,claude,🚀 代理选择
+  
+  # ----- OpenAI / ChatGPT -----
+  - DOMAIN-SUFFIX,openai.com,🚀 代理选择
+  - DOMAIN-SUFFIX,chatgpt.com,🚀 代理选择
+  - DOMAIN-SUFFIX,oaiusercontent.com,🚀 代理选择
+  - DOMAIN-SUFFIX,oaistatic.com,🚀 代理选择
+  - DOMAIN-SUFFIX,sora.com,🚀 代理选择
+  - DOMAIN-SUFFIX,openaiapi-site.azureedge.net,🚀 代理选择
+  - DOMAIN,api.openai.com,🚀 代理选择
+  - DOMAIN,platform.openai.com,🚀 代理选择
+  - DOMAIN,auth0.openai.com,🚀 代理选择
+  - DOMAIN-KEYWORD,openai,🚀 代理选择
+  - DOMAIN-KEYWORD,chatgpt,🚀 代理选择
+  
+  # ----- Antigravity -----
+  - DOMAIN-SUFFIX,antigravity.dev,🚀 代理选择
+  - DOMAIN-SUFFIX,antigravity.ai,🚀 代理选择
+  - DOMAIN-KEYWORD,antigravity,🚀 代理选择
+  
+  # ----- Cursor AI -----
+  - DOMAIN-SUFFIX,cursor.sh,🚀 代理选择
+  - DOMAIN-SUFFIX,cursor.com,🚀 代理选择
+  - DOMAIN,api2.cursor.sh,🚀 代理选择
+  - DOMAIN-KEYWORD,cursor,🚀 代理选择
+  
+  # ----- GitHub Copilot -----
+  - DOMAIN,api.githubcopilot.com,🚀 代理选择
+  - DOMAIN,copilot-proxy.githubusercontent.com,🚀 代理选择
+  - DOMAIN-SUFFIX,copilot.github.com,🚀 代理选择
+  
+  # ----- Google AI / Gemini -----
+  - DOMAIN-SUFFIX,gemini.google.com,🚀 代理选择
+  - DOMAIN-SUFFIX,bard.google.com,🚀 代理选择
+  - DOMAIN,generativelanguage.googleapis.com,🚀 代理选择
+  - DOMAIN,ai.google.dev,🚀 代理选择
+  - DOMAIN,aistudio.google.com,🚀 代理选择
+  
+  # ----- 其他 AI 服务 -----
+  - DOMAIN-SUFFIX,perplexity.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,mistral.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,x.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,grok.x.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,groq.com,🚀 代理选择
+  - DOMAIN-SUFFIX,together.ai,🚀 代理选择
+  - DOMAIN-SUFFIX,replicate.com,🚀 代理选择
+  - DOMAIN-SUFFIX,huggingface.co,🚀 代理选择
+  - DOMAIN-SUFFIX,cohere.ai,🚀 代理选择
+  
+  # ----- JetBrains AI -----
+  - DOMAIN-SUFFIX,jetbrains.ai,🚀 代理选择
+  - DOMAIN,ai.jetbrains.com,🚀 代理选择
+  
+  # ----- Sentry（错误上报）-----
+  - DOMAIN-SUFFIX,sentry.io,🚀 代理选择
+  
+
+  # ===== 私有网络直连 =====
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-SUFFIX,localhost,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,17.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
+  - IP-CIDR,224.0.0.0/4,DIRECT,no-resolve
+  - IP-CIDR6,fe80::/10,DIRECT,no-resolve
+  
+  # ===== 国内常用应用/网站域名直连（优先级高）=====
+  # 腾讯系 / 微信（完整媒体 CDN 域名）
+  - DOMAIN-SUFFIX,qq.com,DIRECT
+  - DOMAIN-SUFFIX,gtimg.com,DIRECT
+  - DOMAIN-SUFFIX,qpic.cn,DIRECT
+  - DOMAIN-SUFFIX,qlogo.cn,DIRECT
+  - DOMAIN-SUFFIX,weixin.qq.com,DIRECT
+  - DOMAIN-SUFFIX,wechat.com,DIRECT
+  - DOMAIN-SUFFIX,tencent.com,DIRECT
+  - DOMAIN-SUFFIX,myqcloud.com,DIRECT
+  # 微信图片/视频/语音专用 CDN
+  - DOMAIN-SUFFIX,wxs.qq.com,DIRECT
+  - DOMAIN-SUFFIX,wx.qq.com,DIRECT
+  - DOMAIN-SUFFIX,wx.qlogo.cn,DIRECT
+  - DOMAIN-SUFFIX,weixinbridge.com,DIRECT
+  - DOMAIN-SUFFIX,wechatpay.cn,DIRECT
+  - DOMAIN-SUFFIX,servicewechat.com,DIRECT
+  - DOMAIN-SUFFIX,weixin.com,DIRECT
+  - DOMAIN-SUFFIX,weixinsxy.com,DIRECT
+  # 微信朋友圈/公众号图片视频
+  - DOMAIN-SUFFIX,mmsns.qpic.cn,DIRECT
+  - DOMAIN-SUFFIX,mmbiz.qpic.cn,DIRECT
+  - DOMAIN-SUFFIX,mp.weixin.qq.com,DIRECT
+  # 腾讯云 CDN（微信媒体存储）
+  - DOMAIN-SUFFIX,file.myqcloud.com,DIRECT
+  - DOMAIN-SUFFIX,cos.ap-guangzhou.myqcloud.com,DIRECT
+  - DOMAIN-SUFFIX,cos.ap-shanghai.myqcloud.com,DIRECT
+  - DOMAIN-SUFFIX,cos.ap-beijing.myqcloud.com,DIRECT
+  - DOMAIN-SUFFIX,cdn-go.cn,DIRECT
+  - DOMAIN-SUFFIX,qcloud.com,DIRECT
+  - DOMAIN-SUFFIX,qcloudimg.com,DIRECT
+  - DOMAIN-SUFFIX,qcloudcdn.com,DIRECT
+  - DOMAIN-SUFFIX,tencentyun.com,DIRECT
+  # 腾讯视频/音乐
+  - DOMAIN-SUFFIX,v.qq.com,DIRECT
+  - DOMAIN-SUFFIX,video.qq.com,DIRECT
+  - DOMAIN-SUFFIX,y.qq.com,DIRECT
+  - DOMAIN-SUFFIX,music.qq.com,DIRECT
+  # 微信小程序
+  - DOMAIN-SUFFIX,wafer.qq.com,DIRECT
+  - DOMAIN-SUFFIX,wxapp.tc.qq.com,DIRECT
+  # 微信关键词兜底
+  - DOMAIN-KEYWORD,weixin,DIRECT
+  - DOMAIN-KEYWORD,wechat,DIRECT
+  - DOMAIN-KEYWORD,qpic,DIRECT
+  - DOMAIN-KEYWORD,myqcloud,DIRECT
+  
+
+  # 阿里系
+  - DOMAIN-SUFFIX,taobao.com,DIRECT
+  - DOMAIN-SUFFIX,tmall.com,DIRECT
+  - DOMAIN-SUFFIX,alicdn.com,DIRECT
+  - DOMAIN-SUFFIX,alipay.com,DIRECT
+  - DOMAIN-SUFFIX,aliyun.com,DIRECT
+  - DOMAIN-SUFFIX,aliyuncs.com,DIRECT
+  - DOMAIN-SUFFIX,alibaba.com,DIRECT
+  - DOMAIN-SUFFIX,dingtalk.com,DIRECT
+  
+  # 百度系
+  - DOMAIN-SUFFIX,baidu.com,DIRECT
+  - DOMAIN-SUFFIX,bdstatic.com,DIRECT
+  - DOMAIN-SUFFIX,bdimg.com,DIRECT
+  - DOMAIN-SUFFIX,baidubce.com,DIRECT
+  - DOMAIN-SUFFIX,bcebos.com,DIRECT
+  
+  # 京东
+  - DOMAIN-SUFFIX,jd.com,DIRECT
+  - DOMAIN-SUFFIX,jd.hk,DIRECT
+  - DOMAIN-SUFFIX,360buyimg.com,DIRECT
+  - DOMAIN-SUFFIX,jdcloud.com,DIRECT
+  
+  # 字节跳动
+  - DOMAIN-SUFFIX,bytedance.com,DIRECT
+  - DOMAIN-SUFFIX,douyin.com,DIRECT
+  - DOMAIN-SUFFIX,douyinvod.com,DIRECT
+  - DOMAIN-SUFFIX,douyinpic.com,DIRECT
+  - DOMAIN-SUFFIX,toutiao.com,DIRECT
+  - DOMAIN-SUFFIX,pstatp.com,DIRECT
+  - DOMAIN-SUFFIX,snssdk.com,DIRECT
+  
+  # B站
+  - DOMAIN-SUFFIX,bilibili.com,DIRECT
+  - DOMAIN-SUFFIX,bilivideo.com,DIRECT
+  - DOMAIN-SUFFIX,hdslb.com,DIRECT
+  - DOMAIN-SUFFIX,biliapi.net,DIRECT
+  - DOMAIN-SUFFIX,biliapi.com,DIRECT
+  
+  # 网易
+  - DOMAIN-SUFFIX,163.com,DIRECT
+  - DOMAIN-SUFFIX,126.net,DIRECT
+  - DOMAIN-SUFFIX,netease.com,DIRECT
+  - DOMAIN-SUFFIX,ydstatic.com,DIRECT
+  
+  # 微博
+  - DOMAIN-SUFFIX,weibo.com,DIRECT
+  - DOMAIN-SUFFIX,weibo.cn,DIRECT
+  - DOMAIN-SUFFIX,sinaimg.cn,DIRECT
+  - DOMAIN-SUFFIX,sinajs.cn,DIRECT
+  - DOMAIN-SUFFIX,sina.com.cn,DIRECT
+  
+  # 知乎
+  - DOMAIN-SUFFIX,zhihu.com,DIRECT
+  - DOMAIN-SUFFIX,zhimg.com,DIRECT
+  
+  # 美团/饿了么
+  - DOMAIN-SUFFIX,meituan.com,DIRECT
+  - DOMAIN-SUFFIX,meituan.net,DIRECT
+  - DOMAIN-SUFFIX,eleme.cn,DIRECT
+  
+  # 小米/华为
+  - DOMAIN-SUFFIX,xiaomi.com,DIRECT
+  - DOMAIN-SUFFIX,mi.com,DIRECT
+  - DOMAIN-SUFFIX,miui.com,DIRECT
+  - DOMAIN-SUFFIX,huawei.com,DIRECT
+  - DOMAIN-SUFFIX,hicloud.com,DIRECT
+  
+  # 其他国内常用
+  - DOMAIN-SUFFIX,csdn.net,DIRECT
+  - DOMAIN-SUFFIX,jianshu.com,DIRECT
+  - DOMAIN-SUFFIX,gitee.com,DIRECT
+  - DOMAIN-SUFFIX,oschina.net,DIRECT
+  - DOMAIN-SUFFIX,cnblogs.com,DIRECT
+  - DOMAIN-SUFFIX,ctrip.com,DIRECT
+  - DOMAIN-SUFFIX,12306.cn,DIRECT
+  - DOMAIN-SUFFIX,suning.com,DIRECT
+  - DOMAIN-SUFFIX,pinduoduo.com,DIRECT
+  - DOMAIN-SUFFIX,kuaishou.com,DIRECT
+  
+  # ===== 国内域名/IP geosite 规则 =====
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT,no-resolve
+  
+  # ===== 其他走代理 =====
+  - MATCH,🚀 代理选择

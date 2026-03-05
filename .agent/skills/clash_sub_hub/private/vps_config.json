@@ -1,0 +1,18 @@
+{
+    "vps": [
+        {
+            "name": "DMIT_US",
+            "ip": "64.186.234.15",
+            "user": "root",
+            "ssh_key": "E:\\DMIT-fDbEiWcKjK-id_rsa\\id_rsa.pem",
+            "ssh_command": "ssh -i \"E:\\DMIT-fDbEiWcKjK-id_rsa\\id_rsa.pem\" root@64.186.234.15"
+        },
+        {
+            "name": "KR_VPS",
+            "ip": "203.231.242.78",
+            "user": "root",
+            "ssh_key": "e:\\Xsf\\clash-for-anything\\.agent\\skills\\clash_sub_hub\\private\\kr_vps.pem",
+            "ssh_command": "ssh -i \"e:\\Xsf\\clash-for-anything\\.agent\\skills\\clash_sub_hub\\private\\kr_vps.pem\" root@203.231.242.78"
+        }
+    ]
+}
